@@ -38,7 +38,7 @@ public class HelloApplication extends Application {
         text.setFill(Color.WHITE);
         text.setTranslateX(-50);
         text.setTranslateY(-50);
-        ImageView logo = new ImageView(new Image("C:\\Users\\ezrat\\Downloads\\34-modified.png"));
+        ImageView logo = new ImageView(new Image(getClass().getResourceAsStream("Image/logo-modified.png")));
         logo.setScaleX(0.2);
         logo.setScaleY(0.2);
         logo.setTranslateX(-50);
@@ -109,9 +109,9 @@ public class HelloApplication extends Application {
     }
     public  GridPane adminPage(Stage stage){
         Text welcometext = new Text("Admin Page");
-        ImageView tellerImage = new ImageView(new Image("C:\\Users\\ezrat\\Downloads\\teller-modified.png")); // This is to teller image
-        ImageView customerImage = new ImageView(new Image("C:\\Users\\ezrat\\Downloads\\customer-modified.png"));
-        ImageView accountImage = new ImageView(new Image("C:\\Users\\ezrat\\Downloads\\account-modified.png"));
+        ImageView tellerImage = new ImageView(new Image(getClass().getResourceAsStream("Image/teller-modified.png"))); // This is to teller image
+        ImageView customerImage = new ImageView(new Image(getClass().getResourceAsStream("Image/customer-modified.png")));
+        ImageView accountImage = new ImageView(new Image(getClass().getResourceAsStream("Image/account-modified.png")));
         tellerImage.setScaleX(0.5);
         tellerImage.setScaleY(0.5);
         customerImage.setScaleX(0.4);
@@ -169,9 +169,9 @@ public class HelloApplication extends Application {
 
     public  GridPane tellerPage(Stage stage){
         Text welcometext = new Text("Teller Page");
-        ImageView manageUser = new ImageView(new Image("C:\\Users\\ezrat\\Downloads\\transfer-modified.png"));
-        ImageView  history= new ImageView(new Image("C:\\Users\\ezrat\\Downloads\\transfer-modified.png"));
-        ImageView accountCreate = new ImageView(new Image("C:\\Users\\ezrat\\Downloads\\createacc-modified.png"));
+        ImageView manageUser = new ImageView(new Image(getClass().getResourceAsStream("Image/transfer-modified.png")));
+        ImageView  history= new ImageView(new Image(getClass().getResourceAsStream("Image/transfer-modified.png")));
+        ImageView accountCreate = new ImageView(new Image(getClass().getResourceAsStream("Image/createacc-modified.png")));
         history.setScaleX(0.5);
         history.setScaleY(0.5);
         manageUser.setScaleX(0.5);
@@ -229,9 +229,9 @@ public class HelloApplication extends Application {
     }
     public  GridPane customerPage(Stage stage){
         Text welcometext = new Text("Customer Page");
-        ImageView transferImage = new ImageView(new Image("C:\\Users\\ezrat\\Downloads\\transfer-modified.png"));
-        ImageView  balanceImage = new ImageView(new Image("C:\\Users\\ezrat\\Downloads\\balance-modified.png"));
-        ImageView transactionImage = new ImageView(new Image("C:\\Users\\ezrat\\Downloads\\createacc-modified.png"));
+        ImageView transferImage = new ImageView(new Image(getClass().getResourceAsStream("Image/transfer-modified.png")));
+        ImageView  balanceImage = new ImageView(new Image(getClass().getResourceAsStream("Image/-modified.png")));
+        ImageView transactionImage = new ImageView(new Image(getClass().getResourceAsStream("Image/createacc-modified.png")));
         balanceImage.setScaleX(0.43);
         balanceImage.setScaleY(0.43);
         transferImage.setScaleX(0.5);
