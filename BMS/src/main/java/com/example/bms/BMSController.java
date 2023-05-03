@@ -3,7 +3,7 @@ package com.example.bms;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
-public class HelloController {
+public class BMSController {
     @FXML
     private Label welcomeText;
 

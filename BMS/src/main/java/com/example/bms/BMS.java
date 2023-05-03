@@ -13,16 +13,14 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicReference;
 
-public class HelloApplication extends Application {
+public class BMS extends Application {
     Scene scene = new Scene(new Group() , 1100, 800);
     @Override
     public void start(Stage stage) throws IOException {
@@ -38,7 +36,7 @@ public class HelloApplication extends Application {
         text.setFill(Color.WHITE);
         text.setTranslateX(-50);
         text.setTranslateY(-50);
-        ImageView logo = new ImageView(new Image(getClass().getResourceAsStream("Image/logo-modified.png")));
+        ImageView logo = new ImageView(new Image(getClass().getResourceAsStream("Image/img.png")));
         logo.setScaleX(0.2);
         logo.setScaleY(0.2);
         logo.setTranslateX(-50);
