@@ -1,5 +1,5 @@
 package com.example.bms;
-
+//this is to check fikiremariams conttibute to th git hub
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Group;
