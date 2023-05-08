@@ -1,0 +1,13 @@
+.label{
+-fx-text-fill:white;
+-fx-font-weight:bold;
+-fx-font-size:20;
+}
+.button{
+-fx-text-fill:black;
+-fx-font-weight:bold;
+-fx-font-size:14;
+}
+.text{
+-fx-text-fill:white;
+}

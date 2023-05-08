@@ -34,21 +34,25 @@ public class BMS extends Application {
         Text text = new Text("Bank Management System"); //main
         text.setFont(Font.font("verdana", FontWeight.BOLD,34));
         text.setFill(Color.WHITE);
-        text.setTranslateX(-50);
-        text.setTranslateY(-50);
+        text.setTranslateX(50);
+        text.setTranslateY(20);
         ImageView logo = new ImageView(new Image(getClass().getResourceAsStream("Image/img.png")));
-        logo.setScaleX(0.2);
-        logo.setScaleY(0.2);
-        logo.setTranslateX(-50);
-        logo.setTranslateY(-50);
+        logo.setScaleX(0.5);
+        logo.setScaleY(0.7);
+        logo.setTranslateY(20);
         GridPane gridPane = new GridPane(); //this gridpane is the main container
         gridPane.setStyle("-fx-background-color: #212F3F");
         gridPane.addColumn(1,text);
         gridPane.addColumn(0,logo);
         gridPane.addColumn(1,parent);
-        scene = new Scene(gridPane, 1100, 800);
+        parent.setTranslateX(50);
+        parent.translateYProperty().bind(scene.heightProperty().divide(10));
+        scene = new Scene(gridPane, 1200, 800);
+        parent.translateXProperty().bind(scene.widthProperty().divide(5.5));
         scene.setFill(Color.BLUEVIOLET);
         stage.setScene(scene);
+        String stylesheetPath = System.getProperty("user.dir") + "/src/main/java/com/example/bms/styles.css";
+        scene.getStylesheets().add("file:///" + stylesheetPath.replace("\\", "/"));
         stage.show();
 
     }
@@ -72,9 +76,6 @@ public class BMS extends Application {
         login.setStyle("-fx-background-color: #0f0");
         welcometext.setFill(Color.color(1,1,1));
         welcometext.setFont(Font.font("verdana",FontWeight.BOLD,33));
-        username.setFont(Font.font("verdana",FontWeight.BOLD,20));
-        password.setFont(Font.font("verdana",FontWeight.BOLD,20));
-        login.setFont(Font.font("verdana",FontWeight.BOLD,20));
         forgotPassword.setFont(Font.font("verdana",FontWeight.BOLD,16));
         forgotPassword.setTextFill(Color.BLUE);
         loginContainer.addColumn(1,welcometext);
@@ -86,8 +87,6 @@ public class BMS extends Application {
         loginContainer.addColumn(1,forgotPassword);
         loginContainer.setHgap(23);
         loginContainer.setVgap(7);
-        loginContainer.setTranslateX(-50);
-        loginContainer.setTranslateY(-50);
         login.setOnAction(e->{
             String str = new String();
             str = usernametextfield.getText();
@@ -156,9 +155,6 @@ public class BMS extends Application {
         account.setFont(Font.font("verdana",FontWeight.BOLD,14));
         adminContainer.setHgap(23);
         adminContainer.setVgap(7);
-        adminContainer.setTranslateY(-90);
-        adminContainer.setTranslateX(-50);
-        adminContainer.setTranslateY(-90);
         logout.setOnAction(e->{
             Platform.exit();
         });
@@ -228,7 +224,7 @@ public class BMS extends Application {
     public  GridPane customerPage(Stage stage){
         Text welcometext = new Text("Customer Page");
         ImageView transferImage = new ImageView(new Image(getClass().getResourceAsStream("Image/transfer-modified.png")));
-        ImageView  balanceImage = new ImageView(new Image(getClass().getResourceAsStream("Image/-modified.png")));
+        ImageView  balanceImage = new ImageView(new Image(getClass().getResourceAsStream("Image/balance-modified.png")));
         ImageView transactionImage = new ImageView(new Image(getClass().getResourceAsStream("Image/createacc-modified.png")));
         balanceImage.setScaleX(0.43);
         balanceImage.setScaleY(0.43);
@@ -252,7 +248,6 @@ public class BMS extends Application {
         logout.setTranslateY(-150);
         logout.setStyle("-fx-background-color:blue");
         GridPane customerPage = new GridPane(); //This gridpane to contain the costumer page element
-        System.out.println((balancebtn.getLayoutY() - customerPage.getLayoutY()) );
         customerPage.addColumn(0,welcometext);
         customerPage.addRow(2,transferImage);
         customerPage.addRow(3,transferbtn);
@@ -265,19 +260,12 @@ public class BMS extends Application {
         transactionImage.setTranslateX(40);
         transactionbtn.setTranslateY(-430);
         transactionbtn.setTranslateX(175);
-        welcometext.setTranslateY(-30);
+        welcometext.setTranslateY(-20);
         welcometext.setTranslateX(100);
-        TextField usernametextfield = new TextField();
-        usernametextfield.setMinWidth(100);
         welcometext.setFill(Color.color(1,1,1));
         welcometext.setFont(Font.font("verdana",FontWeight.BOLD,33));
-        balancebtn.setFont(Font.font("verdana",FontWeight.BOLD,14));
-        transferbtn.setFont(Font.font("verdana",FontWeight.BOLD,14));
-        transactionbtn.setFont(Font.font("verdana",FontWeight.BOLD,14));
         customerPage.setHgap(23);
         customerPage.setVgap(7);
-        customerPage.setTranslateX(-70);
-        customerPage.setTranslateY(-90);
         logout.setOnAction(e->{
             Platform.exit();
         });
