@@ -1,8 +1,8 @@
 package com.example.bms;
-//this is to check fikiremariams conttibute to th git hub
+
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -12,19 +12,18 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
-import java.io.File;
+import java.sql.*;
 import java.io.IOException;
 
 public class BMS extends Application {
+    public static Statement statement ;
+    public static  Connection connection;
     Scene scene = new Scene(new Group() , 1100, 800);
     @Override
     public void start(Stage stage) throws IOException {
@@ -54,8 +53,8 @@ public class BMS extends Application {
         parent.translateXProperty().bind(scene.widthProperty().divide(5.5));
         scene.setFill(Color.BLUEVIOLET);
         stage.setScene(scene);
-        String stylesheetPath = System.getProperty("user.dir") + "/src/main/java/com/example/bms/styles.css";
-        scene.getStylesheets().add("file:///" + stylesheetPath.replace("\\", "/"));
+        String stylesheetPath = "styles.css";
+        scene.getStylesheets().add(String.valueOf(BMS.class.getResource("styles.css")));
         stage.show();
 
     }
@@ -91,20 +90,28 @@ public class BMS extends Application {
         loginContainer.setHgap(23);
         loginContainer.setVgap(7);
         login.setOnAction(e->{
-            String str = new String();
-            str = usernametextfield.getText();
-            if(str.contains("teller"))
-                show(tellerPage(stage),stage);
-            else if (str.contains("user")) {
-                show(customerPage(stage),stage);
-            } else if (str.contains("admin")) {
-                show(adminPage(stage),stage);
-            }
-            else
-            {
-                usernametextfield.setText("Wrong input");
-            }
+            try {
+                initializeDatabase();
+                String sql = "create database new ";
+//                statement.executeUpdate(sql);
+                String str = new String();
+                str = usernametextfield.getText();
+                if(str.contains("teller"))
+                    show(tellerPage(stage),stage);
+                else if (str.contains("user")) {
+                    show(customerPage(stage),stage);
+                } else if (str.contains("admin")) {
+                    show(adminPage(stage),stage);
+                }
+                else
+                {
+                    usernametextfield.setText("Wrong input");
+                }
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
         });
+
         return loginContainer;
     }
     public  GridPane adminPage(Stage stage){
@@ -135,7 +142,8 @@ public class BMS extends Application {
         logout.setFont(Font.font("verdana",FontWeight.BOLD,20));
         logout.setTranslateX(-260);
         logout.setTranslateY(-150);
-        logout.setStyle("-fx-background-color:blue");
+        logout.getStyleClass().add("logout");
+//        logout.setStyle("-fx-background-color:blue");
         GridPane adminContainer = new GridPane(); // This ggridpane to cellct admin page main element
         adminContainer.addColumn(0,welcometext);
         adminContainer.addRow(2,customerImage);
@@ -162,7 +170,7 @@ public class BMS extends Application {
             Platform.exit();
         });
         account.setOnAction(e->{
-                    show(createTellerAcc(stage),stage);
+                    show(new Admin().createTellerAcc(stage),stage);
                 }
         );
         return adminContainer;
@@ -226,6 +234,9 @@ public class BMS extends Application {
         logout.setOnAction(e->{
             Platform.exit();
         });
+        account.setOnAction(e->{
+            show(new Teller().createUserAccountPage(stage),stage);
+        });
         return tellerContainer;
     }
     public  GridPane customerPage(Stage stage){
@@ -278,132 +289,137 @@ public class BMS extends Application {
         });
         return customerPage;
     }
-    public GridPane createTellerAcc(Stage stage){
+//    public GridPane createTellerAcc(Stage stage){
+//
+//        GridPane gridPane = new GridPane();
+//
+//        // Back icon image
+//        ImageView imgBack = new ImageView(new Image(getClass().getResourceAsStream("Image/backIcon.png")));
+//
+//        Label lblCreateTAcc = new Label("Create Teller Account");
+//
+//        Label lblTellerId = new Label("Teller ID:");
+//
+//        Label lblFName = new Label("First Name:");
+//
+//        Label lblLName = new Label("Last Name:");
+//
+//        Label lblGender = new Label("Gender:");
+//
+//        Label lblUname = new Label("User Name:");
+//
+//        Label lblPass = new Label("Password:");
+//
+//        Label lblPhone = new Label("Phone:");
+//
+//        Label lblPhoto = new Label("Photo:");
+//
+//        Label lblEmail = new Label("Email");
+//
+//        TextField txFldTellerId = new TextField();
+//
+//        TextField txFldFName = new TextField();
+//
+//        TextField txFldLName = new TextField();
+//
+//        TextField txFldGender = new TextField();
+//
+//        TextField txFldUName = new TextField();
+//
+//        TextField txFldPass = new TextField();
+//
+//        TextField txFldPhone = new TextField();
+//
+//        TextField txFldEmail = new TextField();
+//
+//        Button btnCreateAcc = new Button("Create Account");
+//
+//        Button btnInsPhoto = new Button("Insert Photo");
+//
+//        Rectangle recPhoto = new Rectangle();
+//
+//        // Styling nodes
+//        gridPane.setStyle("-fx-background-color: #212F3F;");
+//        gridPane.setPadding(new Insets(10,10,10,10));
+//        gridPane.setVgap(20);
+//        gridPane.setHgap(20);
+//        lblCreateTAcc.setFont(Font.font("verdana", FontWeight.BOLD, 24));
+//        lblCreateTAcc.setTextFill(Color.WHITE);
+//        lblTellerId.setFont(Font.font("verdana", FontWeight.BOLD, 14));
+//        lblTellerId.setTextFill(Color.WHITE);
+//        lblFName.setFont(Font.font("verdana", FontWeight.BOLD, 14));
+//        lblFName.setTextFill(Color.WHITE);
+//        lblLName.setFont(Font.font("verdana", FontWeight.BOLD, 14));
+//        lblLName.setTextFill(Color.WHITE);
+//        lblGender.setFont(Font.font("verdana", FontWeight.BOLD, 14));
+//        lblGender.setTextFill(Color.WHITE);
+//        lblUname.setFont(Font.font("verdana", FontWeight.BOLD, 14));
+//        lblUname.setTextFill(Color.WHITE);
+//        lblPass.setFont(Font.font("verdana", FontWeight.BOLD, 14));
+//        lblPass.setTextFill(Color.WHITE);
+//        lblPhone.setFont(Font.font("verdana", FontWeight.BOLD, 14));
+//        lblPhone.setTextFill(Color.WHITE);
+//        lblPhoto.setFont(Font.font("verdana", FontWeight.BOLD, 14));
+//        lblPhoto.setTextFill(Color.WHITE);
+//        lblEmail.setFont(Font.font("verdana", FontWeight.BOLD, 14));
+//        lblEmail.setTextFill(Color.WHITE);
+//        btnCreateAcc.setFont(Font.font("verdana", FontWeight.BOLD, 14));
+//        btnCreateAcc.setStyle("fx-background-color: #fff; -fx-text-fill: #212F3F;");
+//        btnInsPhoto.setFont(Font.font("verdana", FontWeight.BOLD, 14));
+//        btnInsPhoto.setStyle("fx-background-color: #fff; -fx-text-fill: #212F3F;");
+//        recPhoto.setWidth(85);
+//        recPhoto.setHeight(85);
+//        recPhoto.setStroke(Color.WHITE);
+//        recPhoto.setFill(Color.rgb(33, 47, 63));
+//
+//        // Adding nodes to gridPane
+//
+//        gridPane.add(imgBack, 0,0);
+//        gridPane.add(lblCreateTAcc, 1,0, 3,1);
+//        gridPane.add(lblTellerId, 0,1);
+//        gridPane.add(txFldTellerId, 1,1);
+//        gridPane.add(lblPhoto, 2, 1);
+//        gridPane.add(recPhoto,3,1,1,2);
+//        gridPane.add(lblFName, 0, 2);
+//        gridPane.add(txFldFName, 1, 2);
+//        gridPane.add(lblLName,0,3);
+//        gridPane.add(txFldLName,1,3);
+//        gridPane.add(btnInsPhoto,3,3);
+//        gridPane.add(lblGender,0,4);
+//        gridPane.add(txFldGender,1,4);
+//        gridPane.add(lblUname,0,5);
+//        gridPane.add(txFldUName,1,5);
+//        gridPane.add(lblEmail,2,5);
+//        gridPane.add(txFldEmail,3,5);
+//        gridPane.add(lblPass,0,6);
+//        gridPane.add(txFldPass,1,6);
+//        gridPane.add(lblPhone,0,7);
+//        gridPane.add(txFldPhone,1,7);
+//        gridPane.add(btnCreateAcc,3,7);
+//        gridPane.translateYProperty().bind(scene.heightProperty().divide(-4));
+//        // Handling btnInsPhoto
+//        btnInsPhoto.setOnAction(e->{
+//            FileChooser fileChooser = new FileChooser();
+//            File photo = fileChooser.showOpenDialog(stage);
+//            if(photo != null){
+//                ImageView imgVwPhoto = new ImageView(new Image(photo.toURI().toString()));
+//                imgVwPhoto.fitHeightProperty().bind(recPhoto.heightProperty());
+//                imgVwPhoto.fitWidthProperty().bind(recPhoto.widthProperty());
+//                gridPane.add(imgVwPhoto,3,1,1,2);
+//            }
+//
+//        });
+//
+//        // Handling imgBack
+//        imgBack.setOnMouseClicked(e->{
+//            show(adminPage(stage),stage);
+//
+//        });
+//        return gridPane;
+//    }
+    public  static  void initializeDatabase() throws SQLException {
+         connection = DriverManager.getConnection("jdbc:mysql://localhost/bms","eziraa","1234");
+         statement = connection.createStatement();
 
-        GridPane gridPane = new GridPane();
-
-        // Back icon image
-        ImageView imgBack = new ImageView(new Image(getClass().getResourceAsStream("Image/backIcon.png")));
-
-        Label lblCreateTAcc = new Label("Create Teller Account");
-
-        Label lblTellerId = new Label("Teller ID:");
-
-        Label lblFName = new Label("First Name:");
-
-        Label lblLName = new Label("Last Name:");
-
-        Label lblGender = new Label("Gender:");
-
-        Label lblUname = new Label("User Name:");
-
-        Label lblPass = new Label("Password:");
-
-        Label lblPhone = new Label("Phone:");
-
-        Label lblPhoto = new Label("Photo:");
-
-        Label lblEmail = new Label("Email");
-
-        TextField txFldTellerId = new TextField();
-
-        TextField txFldFName = new TextField();
-
-        TextField txFldLName = new TextField();
-
-        TextField txFldGender = new TextField();
-
-        TextField txFldUName = new TextField();
-
-        TextField txFldPass = new TextField();
-
-        TextField txFldPhone = new TextField();
-
-        TextField txFldEmail = new TextField();
-
-        Button btnCreateAcc = new Button("Create Account");
-
-        Button btnInsPhoto = new Button("Insert Photo");
-
-        Rectangle recPhoto = new Rectangle();
-
-        // Styling nodes
-        gridPane.setStyle("-fx-background-color: #212F3F;");
-        gridPane.setPadding(new Insets(10,10,10,10));
-        gridPane.setVgap(20);
-        gridPane.setHgap(20);
-        lblCreateTAcc.setFont(Font.font("verdana", FontWeight.BOLD, 24));
-        lblCreateTAcc.setTextFill(Color.WHITE);
-        lblTellerId.setFont(Font.font("verdana", FontWeight.BOLD, 14));
-        lblTellerId.setTextFill(Color.WHITE);
-        lblFName.setFont(Font.font("verdana", FontWeight.BOLD, 14));
-        lblFName.setTextFill(Color.WHITE);
-        lblLName.setFont(Font.font("verdana", FontWeight.BOLD, 14));
-        lblLName.setTextFill(Color.WHITE);
-        lblGender.setFont(Font.font("verdana", FontWeight.BOLD, 14));
-        lblGender.setTextFill(Color.WHITE);
-        lblUname.setFont(Font.font("verdana", FontWeight.BOLD, 14));
-        lblUname.setTextFill(Color.WHITE);
-        lblPass.setFont(Font.font("verdana", FontWeight.BOLD, 14));
-        lblPass.setTextFill(Color.WHITE);
-        lblPhone.setFont(Font.font("verdana", FontWeight.BOLD, 14));
-        lblPhone.setTextFill(Color.WHITE);
-        lblPhoto.setFont(Font.font("verdana", FontWeight.BOLD, 14));
-        lblPhoto.setTextFill(Color.WHITE);
-        lblEmail.setFont(Font.font("verdana", FontWeight.BOLD, 14));
-        lblEmail.setTextFill(Color.WHITE);
-        btnCreateAcc.setFont(Font.font("verdana", FontWeight.BOLD, 14));
-        btnCreateAcc.setStyle("fx-background-color: #fff; -fx-text-fill: #212F3F;");
-        btnInsPhoto.setFont(Font.font("verdana", FontWeight.BOLD, 14));
-        btnInsPhoto.setStyle("fx-background-color: #fff; -fx-text-fill: #212F3F;");
-        recPhoto.setWidth(85);
-        recPhoto.setHeight(85);
-        recPhoto.setStroke(Color.WHITE);
-        recPhoto.setFill(Color.rgb(33, 47, 63));
-
-        // Adding nodes to gridPane
-
-        gridPane.add(imgBack, 0,0);
-        gridPane.add(lblCreateTAcc, 1,0, 3,1);
-        gridPane.add(lblTellerId, 0,1);
-        gridPane.add(txFldTellerId, 1,1);
-        gridPane.add(lblPhoto, 2, 1);
-        gridPane.add(recPhoto,3,1,1,2);
-        gridPane.add(lblFName, 0, 2);
-        gridPane.add(txFldFName, 1, 2);
-        gridPane.add(lblLName,0,3);
-        gridPane.add(txFldLName,1,3);
-        gridPane.add(btnInsPhoto,3,3);
-        gridPane.add(lblGender,0,4);
-        gridPane.add(txFldGender,1,4);
-        gridPane.add(lblUname,0,5);
-        gridPane.add(txFldUName,1,5);
-        gridPane.add(lblEmail,2,5);
-        gridPane.add(txFldEmail,3,5);
-        gridPane.add(lblPass,0,6);
-        gridPane.add(txFldPass,1,6);
-        gridPane.add(lblPhone,0,7);
-        gridPane.add(txFldPhone,1,7);
-        gridPane.add(btnCreateAcc,3,7);
-        gridPane.translateYProperty().bind(scene.heightProperty().divide(-4));
-        // Handling btnInsPhoto
-        btnInsPhoto.setOnAction(e->{
-            FileChooser fileChooser = new FileChooser();
-            File photo = fileChooser.showOpenDialog(stage);
-            if(photo != null){
-                ImageView imgVwPhoto = new ImageView(new Image(photo.toURI().toString()));
-                imgVwPhoto.fitHeightProperty().bind(recPhoto.heightProperty());
-                imgVwPhoto.fitWidthProperty().bind(recPhoto.widthProperty());
-                gridPane.add(imgVwPhoto,3,1,1,2);
-            }
-
-        });
-
-        // Handling imgBack
-        imgBack.setOnMouseClicked(e->{
-            show(adminPage(stage),stage);
-
-        });
-        return gridPane;
     }
 }
