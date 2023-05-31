@@ -1,8 +1,6 @@
 package com.example.bms;
-
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -13,47 +11,53 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.scene.shape.*;
+
+import java.awt.*;
+import java.awt.Rectangle;
 import java.sql.*;
-import java.io.IOException;
 
 public class BMS extends Application {
     public static Statement statement ;
+    public static Stage stage  ;
     public static  Connection connection;
-    Scene scene = new Scene(new Group() , 1100, 800);
+    public static Scene scene = new Scene(new Group() , 1400, 800);
     @Override
-    public void start(Stage stage) throws IOException {
-        show(loginpage(stage),stage); //This method is to call it when  we need to navigate from one page to other page
+    public void start(Stage stage) {
+        BMS.stage = stage;
+        show(loginpage(),stage); //This method is to call it when  we need to navigate from one page to other page
         //rather than call start method this means initiate the app again if we call start
 
     }
     //This method is to call it when  we need to navigate from one page to other page
     //rather than call start method this means initiate the app again if we call start
-    public void show(Parent parent,Stage stage){
+    public static void show(Parent parent,Stage stage){
+        GridPane main = new GridPane();
         Text text = new Text("Bank Management System"); //main
         text.setFont(Font.font("verdana", FontWeight.BOLD,34));
         text.setFill(Color.WHITE);
         text.setTranslateX(50);
-        text.setTranslateY(20);
-        ImageView logo = new ImageView(new Image(getClass().getResourceAsStream("Image/img.png")));
+        ImageView logo = new ImageView(new Image(BMS.class.getResourceAsStream("Image/img.png")));
         logo.setScaleX(0.5);
         logo.setScaleY(0.7);
-        logo.setTranslateY(20);
-        GridPane gridPane = new GridPane(); //this gridpane is the main container
-        gridPane.setStyle("-fx-background-color: #212F3F");
-        gridPane.addColumn(1,text);
-        gridPane.addColumn(0,logo);
-        gridPane.addColumn(1,parent);
-        parent.translateYProperty().bind(scene.heightProperty().divide(10));
-        scene = new Scene(gridPane, 1200, 800);
-        parent.translateXProperty().bind(scene.widthProperty().divide(5.5));
+        main.setStyle("-fx-background-color: #212F3F");
+        main.addColumn(1,text);
+        main.addColumn(0,logo);
+        main.setPrefSize(scene.getWidth(),150);
+        VBox vBox = new VBox();
+        vBox.setPrefSize(scene.getWidth(),scene.getHeight());
+        vBox.getChildren().addAll(main,parent);
+        scene = new Scene(vBox, scene.getWidth(), scene.getHeight());
         scene.setFill(Color.BLUEVIOLET);
         stage.setScene(scene);
-        String stylesheetPath = "styles.css";
         scene.getStylesheets().add(String.valueOf(BMS.class.getResource("styles.css")));
         stage.show();
 
@@ -62,7 +66,7 @@ public class BMS extends Application {
     public static void main(String[] args) {
         launch();
     }
-    public Parent loginpage(Stage stage){
+    public Parent loginpage(){
 
         GridPane loginContainer = new GridPane(); //this gridpane is Login information container
         Text welcometext = new Text("Welcome"); //This text to show welcome message
@@ -70,7 +74,6 @@ public class BMS extends Application {
         Label password = new Label("Password"); //This label is To Password
         Button login = new Button("Login"); //This Button is to login
         Hyperlink forgotPassword = new Hyperlink("Forgot password?"); //this hyper link is for forgot password
-        welcometext.setTranslateY(-60);
         TextField usernametextfield = new TextField(); //This text field is to username
         TextField passwordtextfield = new TextField(); //This text field is to password
         username.setTextFill(Color.color(1,1,1));
@@ -80,7 +83,6 @@ public class BMS extends Application {
         welcometext.setFont(Font.font("verdana",FontWeight.BOLD,33));
         forgotPassword.setFont(Font.font("verdana",FontWeight.BOLD,16));
         forgotPassword.setTextFill(Color.BLUE);
-        loginContainer.addColumn(1,welcometext);
         loginContainer.addRow(2,username);
         loginContainer.addRow(2,usernametextfield);
         loginContainer.addRow(3,password);
@@ -89,32 +91,53 @@ public class BMS extends Application {
         loginContainer.addColumn(1,forgotPassword);
         loginContainer.setHgap(23);
         loginContainer.setVgap(7);
+        StackPane hBox = new StackPane();
+        hBox.setMaxSize(scene.getWidth()*0.9,300);
+        hBox.setMinHeight(100);
+        hBox.setTranslateX(scene.getWidth()*0.05);
+        loginContainer.setMaxWidth(400);
+        loginContainer.setMaxHeight(400);
+        hBox.setStyle("-fx-background-color: #1b324c");
+        hBox.getChildren().add(welcometext);
+        StackPane hBox1 = new StackPane();
+        hBox1.setMaxWidth(scene.getWidth()*0.9);
+        hBox1.setMinHeight(600);
+        hBox1.setTranslateX(scene.getWidth()*0.05);
+        System.out.println(hBox1.getPrefWidth());
+        hBox1.setStyle("-fx-background-color: #1b324c");
+        hBox1.getChildren().add(loginContainer);
+        VBox vBox = new VBox();
+        vBox.getChildren().addAll(hBox,hBox1);
+        vBox.setPrefSize(200,800);
+        vBox.getStyleClass().add("vBox");
         login.setOnAction(e->{
             try {
                 initializeDatabase();
-                String sql = "create database new ";
-//                statement.executeUpdate(sql);
                 String str = new String();
                 str = usernametextfield.getText();
-                if(str.contains("teller"))
+                if (str.contains("teller")) {
                     show(tellerPage(stage),stage);
-                else if (str.contains("user")) {
-                    show(customerPage(stage),stage);
                 } else if (str.contains("admin")) {
                     show(adminPage(stage),stage);
                 }
+                else if(UserController.check(passwordtextfield.getText(),usernametextfield.getText()))
+                    show(customerPage(stage),stage);
                 else
                 {
                     usernametextfield.setText("Wrong input");
                 }
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
-                }
+                } catch (ClassNotFoundException ex) {
+                throw new RuntimeException(ex);
+            }
         });
+//        loginContainer.setTranslateY(30);
+//        loginContainer.setTranslateX(30);
 
-        return loginContainer;
+        return vBox;
     }
-    public  GridPane adminPage(Stage stage){
+    public  Parent adminPage(Stage stage){
         Text welcometext = new Text("Admin Page");
         ImageView tellerImage = new ImageView(new Image(getClass().getResourceAsStream("Image/teller-modified.png"))); // This is to teller image
         ImageView customerImage = new ImageView(new Image(getClass().getResourceAsStream("Image/customer-modified.png")));
@@ -144,7 +167,7 @@ public class BMS extends Application {
         logout.setTranslateY(-150);
         logout.getStyleClass().add("logout");
 //        logout.setStyle("-fx-background-color:blue");
-        GridPane adminContainer = new GridPane(); // This ggridpane to cellct admin page main element
+        GridPane adminContainer = new GridPane(); // This gridpane to collect admin page main element
         adminContainer.addColumn(0,welcometext);
         adminContainer.addRow(2,customerImage);
         adminContainer.addRow(3,customer);
@@ -157,8 +180,8 @@ public class BMS extends Application {
         accountImage.setTranslateX(20);
         account.setTranslateY(-430);
         account.setTranslateX(130);
-        welcometext.setTranslateY(-30);
-        welcometext.setTranslateX(100);
+//        welcometext.setTranslateY(-30);
+//        welcometext.setTranslateX(100);
         welcometext.setFill(Color.color(1,1,1));
         welcometext.setFont(Font.font("verdana",FontWeight.BOLD,33));
         teller.setFont(Font.font("verdana",FontWeight.BOLD,14));
@@ -169,14 +192,42 @@ public class BMS extends Application {
         logout.setOnAction(e->{
             Platform.exit();
         });
+        StackPane hBox = new StackPane();
+        hBox.setMaxSize(scene.getWidth()*0.9,300);
+        hBox.setMinHeight(100);
+        hBox.setTranslateX(scene.getWidth()*0.05);
+        adminContainer.setMaxWidth(400);
+        adminContainer.setMaxHeight(400);
+        hBox.setStyle("-fx-background-color: #1b324c");
+        hBox.getChildren().add(welcometext);
+        StackPane hBox1 = new StackPane();
+        hBox1.setMaxWidth(scene.getWidth()*0.9);
+        hBox1.setMinHeight(600);
+        hBox1.setTranslateX(scene.getWidth()*0.05);
+        System.out.println(hBox1.getPrefWidth());
+        hBox1.setStyle("-fx-background-color: #1b324c");
+        adminContainer.setTranslateX(80);
+        adminContainer.setTranslateY(80);
+        hBox1.getChildren().add(adminContainer);
+        VBox vBox = new VBox();
+        vBox.getChildren().addAll(hBox,hBox1);
+        vBox.setPrefSize(200,800);
+        vBox.getStyleClass().add("vBox");
         account.setOnAction(e->{
-                    show(new Admin().createTellerAcc(stage),stage);
+            new BMS().show(AdminController.createTellerAcc(),BMS.stage);
                 }
         );
-        return adminContainer;
+        teller.setOnAction(e->{
+            new BMS().show( AdminController.seeTellerInfo(),BMS.stage);
+        });
+        customer.setOnAction(e->{
+            new BMS().show( AdminController.seeUserInfo(),BMS.stage);
+        });
+//        adminContainer.setTranslateX(-130);
+        return vBox;
     }
 
-    public  GridPane tellerPage(Stage stage){
+    public  Parent tellerPage(Stage stage){
         Text welcometext = new Text("Teller Page");
         ImageView manageUser = new ImageView(new Image(getClass().getResourceAsStream("Image/transfer-modified.png")));
         ImageView  history= new ImageView(new Image(getClass().getResourceAsStream("Image/transfer-modified.png")));
@@ -206,7 +257,6 @@ public class BMS extends Application {
         logout.setTranslateY(-150);
         logout.setStyle("-fx-background-color:blue");
         GridPane tellerContainer = new GridPane();
-        tellerContainer.addColumn(0,welcometext);
         tellerContainer.addRow(2,manageUser);
         tellerContainer.addRow(3,manage);
         tellerContainer.addRow(2,history);
@@ -218,8 +268,6 @@ public class BMS extends Application {
         accountCreate.setTranslateX(40);
         account.setTranslateY(-430);
         account.setTranslateX(160);
-        welcometext.setTranslateY(-30);
-        welcometext.setTranslateX(100);
         TextField usernametextfield = new TextField();
         usernametextfield.setMinWidth(100);
         welcometext.setFill(Color.color(1,1,1));
@@ -229,17 +277,43 @@ public class BMS extends Application {
         account.setFont(Font.font("verdana",FontWeight.BOLD,14));
         tellerContainer.setHgap(23);
         tellerContainer.setVgap(7);
-        tellerContainer.setTranslateX(-70);
-        tellerContainer.setTranslateY(-90);
+        StackPane hBox = new StackPane();
+        hBox.setMaxSize(scene.getWidth()*0.9,300);
+        hBox.setMinHeight(100);
+        hBox.setTranslateX(scene.getWidth()*0.05);
+        tellerContainer.setMaxWidth(400);
+        tellerContainer.setMaxHeight(400);
+        hBox.setStyle("-fx-background-color: #1b324c");
+        hBox.getChildren().add(welcometext);
+        StackPane hBox1 = new StackPane();
+        hBox1.setMaxWidth(scene.getWidth()*0.9);
+        hBox1.setMinHeight(600);
+        hBox1.setTranslateX(scene.getWidth()*0.05);
+        System.out.println(hBox1.getPrefWidth());
+        hBox1.setStyle("-fx-background-color: #1b324c");
+        tellerContainer.setTranslateX(80);
+        tellerContainer.setTranslateY(80);
+        hBox1.getChildren().add(tellerContainer);
+        VBox vBox = new VBox();
+        vBox.getChildren().addAll(hBox,hBox1);
+        vBox.setPrefSize(200,800);
+        vBox.getStyleClass().add("vBox");
         logout.setOnAction(e->{
             Platform.exit();
         });
         account.setOnAction(e->{
-            show(new Teller().createUserAccountPage(stage),stage);
+            try {
+                show( TellerController.createAcc(),stage);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            } catch (ClassNotFoundException ex) {
+                throw new RuntimeException(ex);
+            }
         });
-        return tellerContainer;
+        return vBox;
     }
-    public  GridPane customerPage(Stage stage){
+    public  Parent customerPage(Stage stage){
+        new AdminView();
         Text welcometext = new Text("Customer Page");
         ImageView transferImage = new ImageView(new Image(getClass().getResourceAsStream("Image/transfer-modified.png")));
         ImageView  balanceImage = new ImageView(new Image(getClass().getResourceAsStream("Image/balance-modified.png")));
@@ -278,16 +352,57 @@ public class BMS extends Application {
         transactionImage.setTranslateX(40);
         transactionbtn.setTranslateY(-430);
         transactionbtn.setTranslateX(175);
-        welcometext.setTranslateY(-20);
-        welcometext.setTranslateX(100);
         welcometext.setFill(Color.color(1,1,1));
         welcometext.setFont(Font.font("verdana",FontWeight.BOLD,33));
         customerPage.setHgap(23);
         customerPage.setVgap(7);
+        StackPane hBox = new StackPane();
+        hBox.setMaxSize(scene.getWidth()*0.9,300);
+        hBox.setMinHeight(100);
+        hBox.setTranslateX(scene.getWidth()*0.05);
+        customerPage.setMaxWidth(400);
+        customerPage.setMaxHeight(400);
+        hBox.setStyle("-fx-background-color: #1b324c");
+        hBox.getChildren().add(welcometext);
+        StackPane hBox1 = new StackPane();
+        hBox1.setMaxWidth(scene.getWidth()*0.9);
+        hBox1.setMinHeight(600);
+        hBox1.setTranslateX(scene.getWidth()*0.05);
+        System.out.println(hBox1.getPrefWidth());
+        hBox1.setStyle("-fx-background-color: #1b324c");
+        customerPage.setTranslateX(80);
+        customerPage.setTranslateY(80);
+        hBox1.getChildren().add(customerPage);
+        VBox vBox = new VBox();
+        vBox.getChildren().addAll(hBox,hBox1);
+        vBox.setPrefSize(200,800);
+        vBox.getStyleClass().add("vBox");
         logout.setOnAction(e->{
             Platform.exit();
         });
-        return customerPage;
+        balancebtn.setOnAction(e->{
+            try {
+                show(UserController.seeBalance(),stage);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            } catch (ClassNotFoundException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        transferbtn.setOnAction(e->{
+            try {
+                show(UserController.transferMoney(),stage);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            } catch (ClassNotFoundException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        transactionbtn.setOnAction(e->{
+            TransactionView.load();
+            show(UserController.seeTransaction(),stage);
+        });
+        return vBox;
     }
 //    public GridPane createTellerAcc(Stage stage){
 //
@@ -417,9 +532,9 @@ public class BMS extends Application {
 //        });
 //        return gridPane;
 //    }
-    public  static  void initializeDatabase() throws SQLException {
+    public  static  void initializeDatabase() throws SQLException, ClassNotFoundException {
+        Class.forName("com.mysql.cj.jdbc.Driver");
          connection = DriverManager.getConnection("jdbc:mysql://localhost/bms","eziraa","1234");
          statement = connection.createStatement();
-
     }
 }

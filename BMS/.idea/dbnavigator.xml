@@ -13,7 +13,119 @@
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="0a93eba9-476e-4745-a919-ad03edbb3d6c">
-      <console name="My Connection" type="STANDARD" schema="mysql" session="Main"><![CDATA[create database BMS]]></console>
+      <console name="My Connection" type="STANDARD" schema="bms" session="Main"><![CDATA[create database BMSS
+use BMS
+-- create branch table
+create table tbl_branch (
+	branch_id int  primary key,
+	branch_Name varchar(30),
+	region varchar(30) default 'Amhara',
+	zone_ varchar(30) default 'Bahir Dar',
+	woreda varchar(30),
+	kebele varchar(30)
+)
+
+-- create admin table
+create table tbl_admin(
+	admin_id int   primary key,
+	first_name varchar(20),
+	last_namae varchar(20),
+	gender char,
+	user_name varchar(15),
+	password varchar(15),
+	phone int,
+	email varchar(30),
+	registeration_date date,
+	photo blob,
+	branch_id int constraint tbl_admin foreign key(branch_id) references tbl_branch(branch_id)
+)
+
+-- create teller table
+create table tbl_teller (
+	teller_id int  primary key,
+	first_name varchar(20),
+	last_namae varchar(20),
+	gender char,
+	user_name_ varchar(15),
+	password_ varchar(15),
+	phone int,
+	email varchar(30),
+	registeration_date date,
+	photo blob,
+	branch_ID int constraint tbl_tellerFK1 foreign key(branch_ID) references tbl_branch(branch_ID)
+	)
+
+-- create customer table
+create table tbl_customer (
+	customer_id int  primary key,
+	first_name varchar(20),
+	last_namae varchar(20),
+	gender char,
+	user_name_ varchar(15),
+	password_ varchar(15),
+	account_number int,
+	balance float,
+	phone int,
+	email varchar(30),
+	registeration_date date,
+	photo blob
+)
+
+--create transaction table
+create table tbl_transaction(
+	transaction_id INT AUTO_INCREMENT PRIMARY KEY,
+	transaction_type varchar(30),
+	account_number int,
+	amount float,
+	destination int null,
+	transaction_date date,
+	customer_id int ,
+	constraint tbl_transaction_FK1 foreign key(customer_id) references tbl_customer(customer_id),
+	teller_id int,
+	 constraint tbl_transaction_FK2 foreign key(teller_id) references tbl_teller(teller_id)
+)
+CREATE TABLE tbl_transaction (
+    transaction_id INT AUTO_INCREMENT PRIMARY KEY,
+    transaction_type VARCHAR(30),
+    account_number INT,
+    amount FLOAT,
+    destination INT NULL,
+    transaction_date DATE,
+    customer_id INT,
+    teller_id INT,
+    CONSTRAINT tbl_transaction_FK1 FOREIGN KEY (customer_id) REFERENCES tbl_customer(customer_id),
+    CONSTRAINT tbl_transaction_FK2 FOREIGN KEY (teller_id) REFERENCES tbl_teller(teller_id)
+);
+CREATE PROCEDURE spTransferFund(
+    IN amount DECIMAL(10, 2),
+    IN destination VARCHAR(100),
+    IN teller INT,
+    IN customer INT,
+    OUT make BOOL
+)
+BEGIN
+    DECLARE total_salary DECIMAL(10, 2) DEFAULT 0.0 ;
+    DECLARE acc INT DEFAULT 0;
+    SELECT balance INTO total_salary FROM tbl_customer WHERE customer_id = customer;
+    IF total_salary > amount THEN
+        SET total_salary = total_salary - amount ;
+        UPDATE tbl_customer SET balance = total_salary WHERE customer_id = customer;
+        SELECT balance INTO total_salary FROM tbl_customer WHERE account_number = destination;
+        SET total_salary = total_salary + amount;
+        UPDATE tbl_customer SET balance = total_salary WHERE account_number = destination;
+        SELECT account_number INTO acc FROM tbl_customer WHERE customer_id = customer;
+        INSERT INTO tbl_transaction (transaction_type, account_number, amount, destination, transaction_date, customer_id, teller_id)
+        VALUES ('Transfer', acc, amount, destination, DATE_FORMAT(CURDATE(), '%Y-%m-%d'), customer, teller);
+        SET make = true;
+    ELSE
+        SET make = false;
+    END IF;
+END
+SHOW PROCEDURE STATUS;
+
+
+ALTER TABLE tbl_customer MODIFY photo BLOB;
+select  (CURDATE()) as d]]></console>
     </connection>
     <connection id="8f18098a-9e63-4303-aec0-71221009143b">
       <console name="Connection" type="STANDARD" schema="bms" session="Main"><![CDATA[--create database BMS
@@ -59,7 +171,7 @@ create table tbl_teller (
 	branch_ID int constraint tbl_tellerFK1 foreign key(branch_ID) references tbl_branch(branch_ID)
 )
 ALTER TABLE tbl_teller CHANGE user_name_ user_name varchar(23)
-ALTER TABLE tbl_teller CHANGE password_ password varchar(23)
+ALTER TABLE tbl_customer CHANGE phone phone varchar(23)
 ALTER TABLE tbl_teller MODIFY photo varchar(100)
 select * from tbl_teller where user_name = 'eziraa'
 -- create customer table
@@ -89,6 +201,12 @@ create table tbl_transaction(
 	customer_id int,
 	 constraint tbl_transaction_FK1 foreign key(customer_id) references tbl_customer(customer_id)
 )]]></console>
+    </connection>
+    <connection id="31e2aeb1-4aa8-400a-8363-c060f92e6f02">
+      <console name="Connection 1" type="STANDARD" schema="bms" session="Main" />
+    </connection>
+    <connection id="27f2113c-922c-4c28-aaae-59beb65213e8">
+      <console name="Connection 2" type="STANDARD" schema="mysql" session="Main" />
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
@@ -206,6 +324,174 @@ create table tbl_transaction(
           <database value="mysql" />
           <type value="USER_PASSWORD" />
           <user value="eziraa" />
+          <deprecated-pwd value="MTIzNA==" />
+        </database>
+        <properties>
+          <auto-commit value="false" />
+        </properties>
+        <ssh-settings>
+          <active value="false" />
+          <proxy-host value="" />
+          <proxy-port value="22" />
+          <proxy-user value="" />
+          <deprecated-proxy-pwd value="" />
+          <auth-type value="PASSWORD" />
+          <key-file value="" />
+          <key-passphrase value="" />
+        </ssh-settings>
+        <ssl-settings>
+          <active value="false" />
+          <certificate-authority-file value="" />
+          <client-certificate-file value="" />
+          <client-key-file value="" />
+        </ssl-settings>
+        <details>
+          <charset value="UTF-8" />
+          <session-management value="true" />
+          <ddl-file-binding value="true" />
+          <database-logging value="true" />
+          <connect-automatically value="true" />
+          <restore-workspace value="true" />
+          <restore-workspace-deep value="false" />
+          <environment-type value="default" />
+          <connectivity-timeout value="10" />
+          <idle-time-to-disconnect value="30" />
+          <idle-time-to-disconnect-pool value="5" />
+          <credential-expiry-time value="10" />
+          <max-connection-pool-size value="7" />
+          <alternative-statement-delimiter value="" />
+        </details>
+        <object-filters hide-empty-schemas="false" hide-pseudo-columns="false">
+          <object-type-filter>
+            <object-type name="SCHEMA" enabled="true" />
+            <object-type name="USER" enabled="true" />
+            <object-type name="ROLE" enabled="true" />
+            <object-type name="PRIVILEGE" enabled="true" />
+            <object-type name="CHARSET" enabled="true" />
+            <object-type name="TABLE" enabled="true" />
+            <object-type name="VIEW" enabled="true" />
+            <object-type name="MATERIALIZED_VIEW" enabled="true" />
+            <object-type name="NESTED_TABLE" enabled="true" />
+            <object-type name="COLUMN" enabled="true" />
+            <object-type name="INDEX" enabled="true" />
+            <object-type name="CONSTRAINT" enabled="true" />
+            <object-type name="DATASET_TRIGGER" enabled="true" />
+            <object-type name="DATABASE_TRIGGER" enabled="true" />
+            <object-type name="SYNONYM" enabled="true" />
+            <object-type name="SEQUENCE" enabled="true" />
+            <object-type name="PROCEDURE" enabled="true" />
+            <object-type name="FUNCTION" enabled="true" />
+            <object-type name="PACKAGE" enabled="true" />
+            <object-type name="TYPE" enabled="true" />
+            <object-type name="TYPE_ATTRIBUTE" enabled="true" />
+            <object-type name="ARGUMENT" enabled="true" />
+            <object-type name="DIMENSION" enabled="true" />
+            <object-type name="CLUSTER" enabled="true" />
+            <object-type name="DBLINK" enabled="true" />
+          </object-type-filter>
+          <object-name-filters />
+        </object-filters>
+      </connection>
+      <connection id="31e2aeb1-4aa8-400a-8363-c060f92e6f02" active="true" signed="true">
+        <database>
+          <name value="Connection 1" />
+          <description value="" />
+          <database-type value="MYSQL" />
+          <config-type value="BASIC" />
+          <database-version value="5.5" />
+          <driver-source value="BUILTIN" />
+          <driver-library value="" />
+          <driver value="" />
+          <url-type value="DATABASE" />
+          <host value="localhost" />
+          <port value="3306" />
+          <database value="bms" />
+          <type value="USER_PASSWORD" />
+          <user value="eziraa" />
+          <deprecated-pwd value="MTIzNA==" />
+        </database>
+        <properties>
+          <auto-commit value="false" />
+        </properties>
+        <ssh-settings>
+          <active value="false" />
+          <proxy-host value="" />
+          <proxy-port value="22" />
+          <proxy-user value="" />
+          <deprecated-proxy-pwd value="" />
+          <auth-type value="PASSWORD" />
+          <key-file value="" />
+          <key-passphrase value="" />
+        </ssh-settings>
+        <ssl-settings>
+          <active value="false" />
+          <certificate-authority-file value="" />
+          <client-certificate-file value="" />
+          <client-key-file value="" />
+        </ssl-settings>
+        <details>
+          <charset value="UTF-8" />
+          <session-management value="true" />
+          <ddl-file-binding value="true" />
+          <database-logging value="true" />
+          <connect-automatically value="true" />
+          <restore-workspace value="true" />
+          <restore-workspace-deep value="false" />
+          <environment-type value="default" />
+          <connectivity-timeout value="10" />
+          <idle-time-to-disconnect value="30" />
+          <idle-time-to-disconnect-pool value="5" />
+          <credential-expiry-time value="10" />
+          <max-connection-pool-size value="7" />
+          <alternative-statement-delimiter value="" />
+        </details>
+        <object-filters hide-empty-schemas="false" hide-pseudo-columns="false">
+          <object-type-filter>
+            <object-type name="SCHEMA" enabled="true" />
+            <object-type name="USER" enabled="true" />
+            <object-type name="ROLE" enabled="true" />
+            <object-type name="PRIVILEGE" enabled="true" />
+            <object-type name="CHARSET" enabled="true" />
+            <object-type name="TABLE" enabled="true" />
+            <object-type name="VIEW" enabled="true" />
+            <object-type name="MATERIALIZED_VIEW" enabled="true" />
+            <object-type name="NESTED_TABLE" enabled="true" />
+            <object-type name="COLUMN" enabled="true" />
+            <object-type name="INDEX" enabled="true" />
+            <object-type name="CONSTRAINT" enabled="true" />
+            <object-type name="DATASET_TRIGGER" enabled="true" />
+            <object-type name="DATABASE_TRIGGER" enabled="true" />
+            <object-type name="SYNONYM" enabled="true" />
+            <object-type name="SEQUENCE" enabled="true" />
+            <object-type name="PROCEDURE" enabled="true" />
+            <object-type name="FUNCTION" enabled="true" />
+            <object-type name="PACKAGE" enabled="true" />
+            <object-type name="TYPE" enabled="true" />
+            <object-type name="TYPE_ATTRIBUTE" enabled="true" />
+            <object-type name="ARGUMENT" enabled="true" />
+            <object-type name="DIMENSION" enabled="true" />
+            <object-type name="CLUSTER" enabled="true" />
+            <object-type name="DBLINK" enabled="true" />
+          </object-type-filter>
+          <object-name-filters />
+        </object-filters>
+      </connection>
+      <connection id="27f2113c-922c-4c28-aaae-59beb65213e8" active="true" signed="true">
+        <database>
+          <name value="Connection 2" />
+          <description value="" />
+          <database-type value="MYSQL" />
+          <config-type value="BASIC" />
+          <database-version value="5.5" />
+          <driver-source value="BUILTIN" />
+          <driver-library value="" />
+          <driver value="" />
+          <url-type value="DATABASE" />
+          <host value="localhost" />
+          <port value="3306" />
+          <database value="mysql" />
+          <type value="USER_PASSWORD" />
+          <user value="ezira" />
           <deprecated-pwd value="MTIzNA==" />
         </database>
         <properties>
