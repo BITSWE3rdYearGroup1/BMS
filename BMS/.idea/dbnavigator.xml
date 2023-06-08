@@ -14,7 +14,8 @@
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="0a93eba9-476e-4745-a919-ad03edbb3d6c">
       <console name="My Connection" type="STANDARD" schema="bms" session="Main"><![CDATA[create database BMSS
-use BMS
+use BMSS
+create  table images (image longblob)
 -- create branch table
 create table tbl_branch (
 	branch_id int  primary key,
@@ -24,7 +25,6 @@ create table tbl_branch (
 	woreda varchar(30),
 	kebele varchar(30)
 )
-
 -- create admin table
 create table tbl_admin(
 	admin_id int   primary key,
@@ -35,42 +35,46 @@ create table tbl_admin(
 	password varchar(15),
 	phone int,
 	email varchar(30),
-	registeration_date date,
-	photo blob,
-	branch_id int constraint tbl_admin foreign key(branch_id) references tbl_branch(branch_id)
+	registeration_date date
 )
 
 -- create teller table
 create table tbl_teller (
-	teller_id int  primary key,
+	teller_id int  primary key AUTO_INCREMENT,
 	first_name varchar(20),
 	last_namae varchar(20),
 	gender char,
-	user_name_ varchar(15),
-	password_ varchar(15),
+	user_name varchar(15),
+	password varchar(15),
 	phone int,
 	email varchar(30),
 	registeration_date date,
-	photo blob,
-	branch_ID int constraint tbl_tellerFK1 foreign key(branch_ID) references tbl_branch(branch_ID)
+	branch_ID int ,
+	photo longblob,
+	constraint tbl_tellerFK1 foreign key(branch_ID) references tbl_branch(branch_ID)
 	)
-
+alter tbl_teller modify teller_id int  AUTO_INCREMENT;
+drop table tbl_teller
+drop table tbl_transaction
+ teller_id int  primary key AUTO_INCREMENT,
+	first_name ,last_namae ,gender ,user_name ,	password ,phone ,email ,registeration_date ,branch_ID  ,photo ,
 -- create customer table
 create table tbl_customer (
-	customer_id int  primary key,
+	customer_id int  primary key AUTO_INCREMENT,
 	first_name varchar(20),
 	last_namae varchar(20),
 	gender char,
-	user_name_ varchar(15),
-	password_ varchar(15),
+	user_name varchar(15),
+	password varchar(15),
 	account_number int,
 	balance float,
 	phone int,
 	email varchar(30),
-	registeration_date date,
-	photo blob
+	photo longblob,
+	registeration_date date
 )
-
+select customer_id, account_number from  tbl_customer where customer_id = 2
+alter table tbl_customer modify phone varchar (25)  add column teller_id int
 --create transaction table
 create table tbl_transaction(
 	transaction_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -104,27 +108,65 @@ CREATE PROCEDURE spTransferFund(
     OUT make BOOL
 )
 BEGIN
-    DECLARE total_salary DECIMAL(10, 2) DEFAULT 0.0 ;
+    DECLARE initial DECIMAL(10, 2) DEFAULT 0.0 ;
     DECLARE acc INT DEFAULT 0;
-    SELECT balance INTO total_salary FROM tbl_customer WHERE customer_id = customer;
-    IF total_salary > amount THEN
-        SET total_salary = total_salary - amount ;
-        UPDATE tbl_customer SET balance = total_salary WHERE customer_id = customer;
-        SELECT balance INTO total_salary FROM tbl_customer WHERE account_number = destination;
-        SET total_salary = total_salary + amount;
-        UPDATE tbl_customer SET balance = total_salary WHERE account_number = destination;
+    DECLARE id INT DEFAULT 0;
+    SELECT balance INTO initial FROM tbl_customer WHERE customer_id = customer;
+    IF initial > amount THEN
+        UPDATE tbl_customer SET balance = balance - 45 WHERE customer_id = 1;
+        UPDATE tbl_customer SET balance = balance + amount WHERE account_number = destination;
         SELECT account_number INTO acc FROM tbl_customer WHERE customer_id = customer;
+        SELECT customer_id INTO id FROM tbl_customer WHERE account_number = destination;
         INSERT INTO tbl_transaction (transaction_type, account_number, amount, destination, transaction_date, customer_id, teller_id)
         VALUES ('Transfer', acc, amount, destination, DATE_FORMAT(CURDATE(), '%Y-%m-%d'), customer, teller);
+        
+        INSERT INTO tbl_transaction (transaction_type, account_number, amount, destination, transaction_date, customer_id, teller_id)
+        VALUES ('Transfer', acc, amount, destination, DATE_FORMAT(CURDATE(), '%Y-%m-%d'), id, teller);
         SET make = true;
     ELSE
         SET make = false;
     END IF;
 END
+
+
+CREATE PROCEDURE spDeposit(
+    IN amount DECIMAL(10, 2),
+    IN teller INT,
+    IN customer INT,
+    OUT make BOOL
+)
+BEGIN
+    DECLARE id INT DEFAULT 0;
+    DECLARE acc INT DEFAULT 0;
+        UPDATE tbl_customer SET balance = balance - amount WHERE customer_id = customer;
+        SELECT account_number INTO acc FROM tbl_customer WHERE customer_id = customer;
+        INSERT INTO tbl_transaction (transaction_type, amount, destination, transaction_date, customer_id, teller_id)
+        VALUES ('Deposit', amount, acc, DATE_FORMAT(CURDATE(), '%Y-%m-%d'), customer, teller);
+        SET make = true;
+END
+
+
+CREATE PROCEDURE spWithDraw(
+    IN amount DECIMAL(10, 2),
+    IN teller INT,
+    IN customer INT,
+    OUT make BOOL
+)
+BEGIN
+    DECLARE acc INT DEFAULT 0;
+         UPDATE tbl_customer SET balance = balance + amount WHERE customer_id = customer;
+        SELECT account_number INTO acc FROM tbl_customer WHERE customer_id = customer;
+        INSERT INTO tbl_transaction (transaction_type,account_number, amount, transaction_date, customer_id, teller_id)
+        VALUES ('Withdraw',acc, amount, DATE_FORMAT(CURDATE(), '%Y-%m-%d'), customer, teller);
+        SET make = true;
+END
+
+
+
 SHOW PROCEDURE STATUS;
 
 
-ALTER TABLE tbl_customer MODIFY photo BLOB;
+ALTER TABLE tbl_customer MODIFY phone varchar(15);
 select  (CURDATE()) as d]]></console>
     </connection>
     <connection id="8f18098a-9e63-4303-aec0-71221009143b">
@@ -215,6 +257,13 @@ create table tbl_transaction(
   <component name="DBNavigator.Project.DatabaseFileManager">
     <open-files />
   </component>
+  <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-actions connection-id="0a93eba9-476e-4745-a919-ad03edbb3d6c" dataset="bmss.tbl_customer" active-filter-id="">
+      <filter id="40b8a65c-677a-4e22-8736-e8431e457ad5" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="customer_id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+  </component>
   <component name="DBNavigator.Project.ExecutionManager">
     <retain-sticky-names value="false" />
   </component>
@@ -231,13 +280,15 @@ create table tbl_transaction(
           <database-type value="MYSQL" />
           <config-type value="BASIC" />
           <database-version value="5.5" />
-          <driver-source value="BUILTIN" />
+          <driver-source value="BUNDLED" />
           <driver-library value="" />
           <driver value="" />
           <url-type value="DATABASE" />
           <host value="localhost" />
           <port value="3306" />
           <database value="mysql" />
+          <tns-folder value="" />
+          <tns-profile value="" />
           <type value="USER_PASSWORD" />
           <user value="eziraa" />
           <deprecated-pwd value="MTIzNA==" />
@@ -315,13 +366,15 @@ create table tbl_transaction(
           <database-type value="MYSQL" />
           <config-type value="BASIC" />
           <database-version value="5.5" />
-          <driver-source value="BUILTIN" />
+          <driver-source value="BUNDLED" />
           <driver-library value="" />
           <driver value="" />
           <url-type value="DATABASE" />
           <host value="localhost" />
           <port value="3306" />
           <database value="mysql" />
+          <tns-folder value="" />
+          <tns-profile value="" />
           <type value="USER_PASSWORD" />
           <user value="eziraa" />
           <deprecated-pwd value="MTIzNA==" />
@@ -399,13 +452,15 @@ create table tbl_transaction(
           <database-type value="MYSQL" />
           <config-type value="BASIC" />
           <database-version value="5.5" />
-          <driver-source value="BUILTIN" />
+          <driver-source value="BUNDLED" />
           <driver-library value="" />
           <driver value="" />
           <url-type value="DATABASE" />
           <host value="localhost" />
           <port value="3306" />
           <database value="bms" />
+          <tns-folder value="" />
+          <tns-profile value="" />
           <type value="USER_PASSWORD" />
           <user value="eziraa" />
           <deprecated-pwd value="MTIzNA==" />
@@ -483,13 +538,15 @@ create table tbl_transaction(
           <database-type value="MYSQL" />
           <config-type value="BASIC" />
           <database-version value="5.5" />
-          <driver-source value="BUILTIN" />
+          <driver-source value="BUNDLED" />
           <driver-library value="" />
           <driver value="" />
           <url-type value="DATABASE" />
           <host value="localhost" />
           <port value="3306" />
           <database value="mysql" />
+          <tns-folder value="" />
+          <tns-profile value="" />
           <type value="USER_PASSWORD" />
           <user value="ezira" />
           <deprecated-pwd value="MTIzNA==" />

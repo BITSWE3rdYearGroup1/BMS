@@ -1,11 +1,14 @@
 package com.example.bms;
 
+import javafx.scene.Parent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import java.sql.Date;
 
 public class Admin {
+    public static User user = new User();
+    public static Teller teller = new Teller();
     private String firstName;
     private String secondName;
     private String gender;
@@ -40,7 +43,7 @@ public class Admin {
     public static void main(String[] args) {
 
     }
-    public GridPane createTellerAcc(Stage stage){
+    public Parent createTellerAcc(Stage stage){
        return AdminView.createAccView();
 
     }

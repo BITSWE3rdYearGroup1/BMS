@@ -16,6 +16,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
+import java.util.Objects;
+
 
 public class UserView extends EmployeeView{
     static Button transferbtn = new Button("Transfer.");
@@ -61,16 +63,22 @@ public class UserView extends EmployeeView{
         allPage.getChildren().addAll(header,body);
         body.setMaxSize(BMS.scene.getWidth()*0.9,100);
         body.setMaxHeight(100);
-
+        VBox rightMenu = new VBox();
+        rightMenu.getStyleClass().add("right");
+        rightMenu.setMinWidth(300);
+        ImageView imageView = new ImageView(new Image(Objects.requireNonNull(Teller.class.getResourceAsStream("new.jpg"))));
+        imageView.setFitWidth(200);
+        imageView.setFitHeight(230);
+        imageView.setTranslateX(30);
+        rightMenu.getChildren().add(imageView);
         body.getStyleClass().add("header");
         body.setTranslateX(BMS.scene.getWidth()*0.05);
         StackPane main = new StackPane();
         main.setMinWidth(800);
         main.setMaxHeight(500);
         main.getStyleClass().add("body");
-        body.getChildren().addAll(leftMenu,main);
+        body.getChildren().addAll(leftMenu,main,rightMenu);
         body.setSpacing(30);
-        main.setTranslateX(100);
         if (type.equalsIgnoreCase("balance"))
         main.getChildren().addAll(seeBalance());
         else if (type.equalsIgnoreCase("transfer")) {
@@ -81,6 +89,7 @@ public class UserView extends EmployeeView{
             text.setText("Transaction history page");
             main.getChildren().addAll(transactionView());
         }
+        allPage.prefWidthProperty().bind(BMS.scene.widthProperty().multiply(1));
         return allPage;
     }
     public static Parent seeBalance(){
