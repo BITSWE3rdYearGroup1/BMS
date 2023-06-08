@@ -61,7 +61,7 @@ public class TransactionView {
         amount.setCellValueFactory(new PropertyValueFactory<Transaction,Double>("amount"));
         TransactionView.transactionView.transactionTableView.getColumns().addAll(id,accountNumber,amount,destination,transactionType,transactionDate,customerName,tellerName);
         transactionTable.getChildren().add(TransactionView.transactionView.transactionTableView);
-        transactionTable.setMaxSize(BMS.scene.getWidth()*0.685,500);
+        transactionTable.setMaxSize(BMS.scene.getWidth()*0.52,500);
         AdminView.adminView.tellerTableView.setStyle("-fx-foreground-color:red");
         transactionTable.setStyle("-fx-background-color:red");
 

@@ -1,11 +1,15 @@
 package com.example.bms;
 
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class Employee {
@@ -18,9 +22,9 @@ public class Employee {
     private final SimpleStringProperty phone;
     private final SimpleStringProperty email;
     private final SimpleStringProperty registrationDate;
-    private final SimpleStringProperty photo;
+    private Image photo;
 
-    public Employee(int id, String firstName, String secondName, String gender, String username, String password, String phone, String email, String registrationDate, String photo) {
+    public Employee(int id, String firstName, String secondName, String gender, String username, String password, String phone, String email, String registrationDate, Image photo) {
         this.teller_id = new SimpleIntegerProperty(id);
         this.firstName = new SimpleStringProperty(firstName);
         this.secondName = new SimpleStringProperty(secondName);
@@ -30,7 +34,7 @@ public class Employee {
         this.phone = new SimpleStringProperty(phone);
         this.email = new SimpleStringProperty(email);
         this.registrationDate = new SimpleStringProperty( registrationDate);
-        this.photo = new SimpleStringProperty(photo);
+        this.photo =(photo);
     }
 
 
@@ -71,6 +75,9 @@ public class Employee {
 
     public void setSecondName(String secondName) {
         this.secondName.set(secondName);
+    }
+    public void setPhoto(Image image){
+        this.photo =(image);
     }
 
     public String getGender() {
@@ -133,21 +140,43 @@ public class Employee {
         this.email.set(email);
     }
 
-
-
-
-
-    public String getPhoto() {
-        return photo.get();
-    }
-
-    public SimpleStringProperty photoProperty() {
+    public Image getImage() {
         return photo;
     }
 
-    public void setPhoto(String photo) {
-        this.photo.set(photo);
+    public ObservableValue<Image> imageProperty() {
+        return new ObservableValue<Image>() {
+            @Override
+            public void addListener(ChangeListener<? super Image> changeListener) {
+
+            }
+
+            @Override
+            public void removeListener(ChangeListener<? super Image> changeListener) {
+
+            }
+
+            @Override
+            public Image getValue() {
+                return photo;
+            }
+
+            @Override
+            public void addListener(InvalidationListener invalidationListener) {
+
+            }
+
+            @Override
+            public void removeListener(InvalidationListener invalidationListener) {
+
+            }
+        };
     }
+
+
+
+
+
 
 
 

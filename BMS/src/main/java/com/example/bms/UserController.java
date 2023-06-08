@@ -1,27 +1,15 @@
 package com.example.bms;
-
-import com.mysql.cj.jdbc.ConnectionImpl;
-import com.mysql.cj.protocol.Resultset;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-
-import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.sql.*;
-import java.time.LocalDate;
-
 import static com.example.bms.BMS.connection;
-
 public class UserController {
     public static Parent seeBalance() throws SQLException, ClassNotFoundException {
         UserView.transferbtn.setOnAction(e->{
             try {
 
                 BMS.show(UserController.transferMoney(),BMS.stage);
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            } catch (ClassNotFoundException ex) {
+            } catch (SQLException | ClassNotFoundException ex) {
                 throw new RuntimeException(ex);
             }
 
@@ -32,7 +20,7 @@ public class UserController {
         });
         BMS.initializeDatabase();
         PreparedStatement preparedStatement = connection.prepareStatement("select balance from tbl_customer where account_number = ?");
-        preparedStatement.setLong(1,User.accountNumber);
+        preparedStatement.setLong(1,User.user.accountNumber);
         ResultSet resultSet = preparedStatement.executeQuery();
         if (resultSet.next()) {
             System.out.println(resultSet.getDouble(1));
@@ -46,9 +34,7 @@ public class UserController {
         UserView.balancebtn.setOnAction(e->{
             try {
                 BMS.show(UserController.seeBalance(),BMS.stage);
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            } catch (ClassNotFoundException ex) {
+            } catch (SQLException | ClassNotFoundException ex) {
                 throw new RuntimeException(ex);
             }
 
@@ -60,18 +46,13 @@ public class UserController {
         UserView.btnComplete.setOnAction(e-> {
             try {
                 BMS.initializeDatabase();
-            String sql = "update tbl_customer set balance = ? where account_number = ?";
-             sql = "select * balance  tbl_customer set balance = ? where account_number = ?";
                 CallableStatement preparedStatement1 = connection.prepareCall("{CALL spTransferFund(?,?,?,?,?)}");
-
                 preparedStatement1.setDouble(1, Double.parseDouble(UserView.txtFldAmount.getText()));
                 preparedStatement1.setInt(2, Integer.parseInt(UserView.txtFldReceiverAcc.getText()));
-                preparedStatement1.setInt(3,User.id);
+                preparedStatement1.setInt(3,Teller.id);
                 preparedStatement1.setInt(4,User.id);
                 preparedStatement1.registerOutParameter(5,Types.BOOLEAN);
-                System.out.println("not executed");
                 preparedStatement1.execute();
-                System.out.println("executed");
                 boolean bool = preparedStatement1.getBoolean("@make");
                 if (bool) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -105,13 +86,11 @@ public class UserController {
         return UserView.userHome("transfer");
     }
     public static Parent seeTransaction(){
-        TransactionView.load();;
+        TransactionView.load();
         UserView.balancebtn.setOnAction(e->{
             try {
                 BMS.show(UserController.seeBalance(),BMS.stage);
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            } catch (ClassNotFoundException ex) {
+            } catch (SQLException | ClassNotFoundException ex) {
                 throw new RuntimeException(ex);
             }
 
@@ -119,9 +98,7 @@ public class UserController {
         UserView.transferbtn.setOnAction(e->{
             try {
                 BMS.show(UserController.transferMoney(),BMS.stage);
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            } catch (ClassNotFoundException ex) {
+            } catch (SQLException | ClassNotFoundException ex) {
                 throw new RuntimeException(ex);
             }
 
@@ -131,14 +108,14 @@ public class UserController {
     }
     public static boolean check(String password ,String username) throws SQLException, ClassNotFoundException {
         BMS.initializeDatabase();
-        String sql = "select user_name_, password_ , account_number,customer_id from tbl_customer where user_name_=?";
+        String sql = "select user_name, password , account_number,customer_id from tbl_customer where user_name =?";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1,username);
         ResultSet resultset = preparedStatement.executeQuery();
         while (resultset.next())
             if (resultset.getString(1).equalsIgnoreCase(username)&&resultset.getString(2).equalsIgnoreCase(password)) {
-                User.accountNumber = resultset.getLong(3);
-                User.id = resultset.getInt(4);
+                User.user.accountNumber = resultset.getLong(3);
+                User.user.id = resultset.getInt(4);
                 return true;
             }
         return false;

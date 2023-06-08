@@ -3,6 +3,9 @@ package com.example.bms;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+
+import javax.swing.text.html.ImageView;
 
 public class EmployeeView {
     public static TextField txFldTellerID;
@@ -19,7 +22,7 @@ public class EmployeeView {
     public static TableColumn<Teller, String> phone =  new TableColumn<Teller,String>("Phone number");
     public static  TableColumn<Teller, String> email =  new TableColumn<Teller,String>("Email");
     public static TableColumn<Teller, String> registrationDate =  new TableColumn<Teller,String>("Registration Date");
-    public static TableColumn<Teller, String> photo =  new TableColumn<Teller,String>("Photo");
+    public  static TableColumn<Teller, Image> photo =  new TableColumn<Teller,Image>("Photo");
     public static TableColumn<Teller, Integer> branchID =  new TableColumn<Teller,Integer>("Branch ID");
 
 
