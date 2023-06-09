@@ -1,4 +1,5 @@
 package com.example.bms;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Group;
@@ -18,9 +19,12 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
 import java.sql.*;
 import java.util.Objects;
-import static com.example.bms.TellerView.*;
+
+import static com.example.bms.TellerView.btnSeeHistory;
+import static com.example.bms.TellerView.btnmanage;
 public class BMS extends Application {
     public static Statement statement ;
     public static Stage stage  ;
@@ -384,9 +388,7 @@ public class BMS extends Application {
         transferbtn.setOnAction(e->{
             try {
                 show(UserController.transferMoney(),stage);
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            } catch (ClassNotFoundException ex) {
+            } catch (SQLException | ClassNotFoundException ex) {
                 throw new RuntimeException(ex);
             }
         });
@@ -398,7 +400,7 @@ public class BMS extends Application {
     }
 
     public  static  void initializeDatabase() throws SQLException, ClassNotFoundException {
-        Class.forName("com.mysql.cj.jdbc.Driver");
+//        Class.forName("com.mysql.cj.jdbc.Driver");
          connection = DriverManager.getConnection("jdbc:mysql://localhost/bms","eziraa","1234");
          statement = connection.createStatement();
     }

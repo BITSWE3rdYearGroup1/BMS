@@ -81,6 +81,15 @@ public class AdminController {
     }
     public static Parent seeTellerInfo(){
         new AdminView();
+        EmployeeView.tellerTableView.setOnMouseClicked(e->{
+                Teller teller = EmployeeView.tellerTableView.getSelectionModel().getSelectedItem();
+                if (EmployeeView.tellerTableView.getSelectionModel().getSelectedItem()!=(null))
+                {  Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setContentText(teller.getFirstName() + " " + teller.getSecondName());
+                alert.setTitle("Information message");
+                alert.showAndWait();
+            }
+        });
         AdminView.btnSearchTeller.setOnAction(e->{
             if (AdminView.txtFldTeller.getText().equalsIgnoreCase(""))
             {
@@ -144,6 +153,7 @@ public class AdminController {
                 new Image(new ByteArrayInputStream( resultSet.getBytes(11))),
                 resultSet.getInt(10)));
             }
+            AdminView.adminView.tellerTableView.getItems().clear();
             AdminView.adminView.tellerTableView.setItems(AdminView.adminView.tellerList);
             con.close();
 
@@ -219,6 +229,7 @@ public class AdminController {
                         resultSet.getString(12),
                         new Image(new ByteArrayInputStream(resultSet.getBytes(11)))));
             }
+            TellerView.tellerView.userTableView.getItems().clear();
             TellerView.tellerView.userTableView.setItems(TellerView.tellerView.userList);
             con.close();
 

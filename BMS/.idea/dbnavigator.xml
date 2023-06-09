@@ -15,8 +15,6 @@
     <connection id="0a93eba9-476e-4745-a919-ad03edbb3d6c">
       <console name="My Connection" type="STANDARD" schema="bms" session="Main"><![CDATA[create database BMSS
 use BMSS
-create  table images (image longblob)
--- create branch table
 create table tbl_branch (
 	branch_id int  primary key,
 	branch_Name varchar(30),
@@ -46,18 +44,13 @@ create table tbl_teller (
 	gender char,
 	user_name varchar(15),
 	password varchar(15),
-	phone int,
+	phone varchar(21),
 	email varchar(30),
 	registeration_date date,
 	branch_ID int ,
 	photo longblob,
 	constraint tbl_tellerFK1 foreign key(branch_ID) references tbl_branch(branch_ID)
 	)
-alter tbl_teller modify teller_id int  AUTO_INCREMENT;
-drop table tbl_teller
-drop table tbl_transaction
- teller_id int  primary key AUTO_INCREMENT,
-	first_name ,last_namae ,gender ,user_name ,	password ,phone ,email ,registeration_date ,branch_ID  ,photo ,
 -- create customer table
 create table tbl_customer (
 	customer_id int  primary key AUTO_INCREMENT,
@@ -68,13 +61,11 @@ create table tbl_customer (
 	password varchar(15),
 	account_number int,
 	balance float,
-	phone int,
+	phone varchar(),
 	email varchar(30),
 	photo longblob,
 	registeration_date date
-)
-select customer_id, account_number from  tbl_customer where customer_id = 2
-alter table tbl_customer modify phone varchar (25)  add column teller_id int
+)t
 --create transaction table
 create table tbl_transaction(
 	transaction_id INT AUTO_INCREMENT PRIMARY KEY,

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="543.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.bms.PleaseProvideControllerClassName">
+   <children>
+      <AnchorPane fx:id="cyanView" prefHeight="238.0" prefWidth="600.0" style="-fx-background-color: cyan;" visible="false" />
+      <AnchorPane fx:id="nineView" prefHeight="238.0" prefWidth="600.0" style="-fx-background-color: #909;" />
+      <Button fx:id="nineBtn" layoutX="180.0" layoutY="328.0" mnemonicParsing="false" onAction="#changeView" text="909" />
+      <Button fx:id="nineBtn" layoutX="300.0" layoutY="328.0" mnemonicParsing="false" onAction="#changeView" text="cyan" />
+   </children>
+</AnchorPane>

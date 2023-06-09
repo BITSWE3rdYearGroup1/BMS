@@ -9,7 +9,7 @@ import javax.swing.text.html.ImageView;
 
 public class EmployeeView {
     public static TextField txFldTellerID;
-    public  TableView<Teller> tellerTableView = new TableView<Teller>();
+    public  static TableView<Teller> tellerTableView = new TableView<Teller>();
     public  ObservableList<Teller> tellerList = FXCollections.observableArrayList();
     public static TableColumn<Teller,Integer> tellerID = new TableColumn<Teller, Integer>("Teller ID");
     public  static String  className = "table-cell";

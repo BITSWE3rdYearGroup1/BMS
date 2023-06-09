@@ -203,6 +203,7 @@ public class AdminView  extends EmployeeView{
         registrationDate.setMinWidth(100);
         photo.setMinWidth(100);
         branchID.setMinWidth(100);
+        EmployeeView.tellerTableView.getColumns().clear();
         tellerID.setCellValueFactory(new PropertyValueFactory<>("teller_id"));
         firstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         secondName.setCellValueFactory(new PropertyValueFactory<>("secondName"));
@@ -295,6 +296,7 @@ public class AdminView  extends EmployeeView{
         TellerView.registrationDate.setMinWidth(100);
         TellerView.photo.setMinWidth(100);
         TellerView.branchID.setMinWidth(100);
+        EmployeeView.tellerTableView.getColumns().clear();
         TellerView.tellerID.setCellValueFactory(new PropertyValueFactory<>("customerID"));
         TellerView.firstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         TellerView.secondName.setCellValueFactory(new PropertyValueFactory<>("secondName"));
