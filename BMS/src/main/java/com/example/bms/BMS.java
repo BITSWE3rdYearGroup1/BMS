@@ -26,7 +26,7 @@ public class BMS extends Application {
     public static Statement statement ;
     public static Stage stage  ;
     public static  Connection connection;
-    public static Scene scene = new Scene(new Group() , 1000, 700);
+    public static Scene scene = new Scene(new Group() , 1000, 650);
     @Override
     public void start(Stage stage) {
         BMS.stage = stage;
@@ -42,11 +42,11 @@ public class BMS extends Application {
         GridPane main = new GridPane();
         Text text = new Text("Bank Management System"); //main
         text.setFont(Font.font("verdana", FontWeight.BOLD,34));
-        text.setFill(Color.BLACK);
+        text.setFill(Color.WHITE);
         text.setTranslateX(50);
         main.getStyleClass().add("bg-primary");
 
-        ImageView logo = new ImageView(new Image(Objects.requireNonNull(BMS.class.getResourceAsStream("Image/bank.png"))));
+        ImageView logo = new ImageView(new Image(Objects.requireNonNull(BMS.class.getResourceAsStream("Image/banking.png"))));
         logo.setTranslateX(80);
         text.setTranslateX(100);
         logo.setScaleX(0.7);
@@ -55,7 +55,7 @@ public class BMS extends Application {
         main.addColumn(0,logo);
         VBox vBox = new VBox();
         vBox.setTranslateY(40);
-        vBox.setStyle("-fx-background-color: #eeeeee");
+        vBox.setStyle("-fx-background-color: #000000");
         vBox.setPrefSize(scene.getWidth(),scene.getHeight());
         vBox.getChildren().addAll(main,parent);
         scene = new Scene(vBox, scene.getWidth(), scene.getHeight());
