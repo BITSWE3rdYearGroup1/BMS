@@ -1,6 +1,7 @@
 package com.example.bms;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -25,7 +26,7 @@ public class BMS extends Application {
     public static Statement statement ;
     public static Stage stage  ;
     public static  Connection connection;
-    public static Scene scene = new Scene(new Group() , 1500, 800);
+    public static Scene scene = new Scene(new Group() , 1000, 700);
     @Override
     public void start(Stage stage) {
         BMS.stage = stage;
@@ -41,21 +42,23 @@ public class BMS extends Application {
         GridPane main = new GridPane();
         Text text = new Text("Bank Management System"); //main
         text.setFont(Font.font("verdana", FontWeight.BOLD,34));
-        text.setFill(Color.WHITE);
+        text.setFill(Color.BLACK);
         text.setTranslateX(50);
         main.getStyleClass().add("bg-primary");
-        ImageView logo = new ImageView(new Image(Objects.requireNonNull(BMS.class.getResourceAsStream("Image/img.png"))));
-        logo.setScaleX(0.5);
+
+        ImageView logo = new ImageView(new Image(Objects.requireNonNull(BMS.class.getResourceAsStream("Image/bank.png"))));
+        logo.setTranslateX(80);
+        text.setTranslateX(100);
+        logo.setScaleX(0.7);
         logo.setScaleY(0.7);
-        main.setStyle("-fx-background-color: #212F3F");
         main.addColumn(1,text);
         main.addColumn(0,logo);
-        main.setPrefSize(scene.getWidth(),150);
         VBox vBox = new VBox();
+        vBox.setTranslateY(40);
+        vBox.setStyle("-fx-background-color: #eeeeee");
         vBox.setPrefSize(scene.getWidth(),scene.getHeight());
         vBox.getChildren().addAll(main,parent);
         scene = new Scene(vBox, scene.getWidth(), scene.getHeight());
-        scene.setFill(Color.BLUEVIOLET);
         stage.setScene(scene);
         scene.getStylesheets().add(String.valueOf(BMS.class.getResource("styles.css")));;
         stage.show();
@@ -64,60 +67,59 @@ public class BMS extends Application {
         launch();
     }
     public Parent loginPage(){
-        GridPane loginContainer = new GridPane(); //this Grid pane is Login information container
-        Text welcometext = new Text("Welcome"); //This text to show welcome message
-        Label username =  new Label("Username"); // this label is to username
-        Label password = new Label("Password"); //This label is To Password
-        Button login = new Button("Login"); //This Button is to login
-        Hyperlink forgotPassword = new Hyperlink("Forgot password?"); //this hyper link is for forgot password
-        TextField usernametextfield = new TextField(); //This text field is to username
-        TextField passwordtextfield = new TextField(); //This text field is to password
-        username.setTextFill(Color.color(1,1,1));
-        password.setTextFill(Color.color(1,1,1));
-        welcometext.setFill(Color.color(1,1,1));
-        welcometext.setFont(Font.font("verdana",FontWeight.BOLD,33));
-        forgotPassword.setFont(Font.font("verdana",FontWeight.BOLD,16));
-        forgotPassword.setTextFill(Color.BLUE);
-        loginContainer.addRow(2,username);
-        loginContainer.addRow(2,usernametextfield);
-        loginContainer.addRow(3,password);
-        loginContainer.addRow(3,passwordtextfield);
-        loginContainer.addColumn(1,login);
-        loginContainer.addColumn(1,forgotPassword);
+        GridPane loginContainer = new GridPane(); // this gridpane is Login information container
+        Text welcometext = new Text("Welcome"); // This text to show welcome message
+        ImageView username = new ImageView(new Image(BMS.class.getResourceAsStream("Image/user.png")));
+        ImageView password = new ImageView(new Image(BMS.class.getResourceAsStream("Image/lock.png")));
+        Label errorTxt = new Label("Wrong Username or Password");
+        Button login = new Button("Login"); // This Button is to login
+        Hyperlink forgotPassword = new Hyperlink("Forgot password?"); // this hyper link is for forgot password
+        username.setTranslateX(15);
+        username.setTranslateY(-5);
+        password.setTranslateX(15);
+        password.setTranslateY(-5);
+        TextField usernametextfield = new TextField("User Name"); // This text field is to username
+        TextField passwordtextfield = new TextField("Password"); // This text field is to password
+        username.setScaleX(0.5);
+        username.setScaleY(0.5);
+        password.setScaleX(0.5);
+        password.setScaleY(0.5);
+        welcometext.setFont(Font.font("verdana", FontWeight.BOLD, 33));
+        forgotPassword.setFont(Font.font("verdana", FontWeight.BOLD, 16));
+
+        loginContainer.addColumn(1, welcometext);
+        loginContainer.addRow(2, username);
+        loginContainer.addRow(2, usernametextfield);
+        loginContainer.addRow(3, password);
+        loginContainer.addRow(3, passwordtextfield);
+        loginContainer.addColumn(1, login);
+        loginContainer.addColumn(1, forgotPassword);
         loginContainer.setHgap(23);
         loginContainer.setVgap(7);
-        StackPane hBox = new StackPane();
-        hBox.setMaxSize(scene.getWidth()*0.9,300);
-        hBox.setMinHeight(100);
-        hBox.setTranslateX(scene.getWidth()*0.05);
         loginContainer.setMaxWidth(400);
         loginContainer.setMaxHeight(400);
-        hBox.setStyle("-fx-background-color: #1b324c");
-        hBox.getChildren().add(welcometext);
         StackPane hBox1 = new StackPane();
-        hBox1.setMaxWidth(scene.getWidth()*0.9);
-        hBox1.setMinHeight(600);
-        hBox1.setTranslateX(scene.getWidth()*0.05);
-        hBox1.setStyle("-fx-background-color: #1b324c");
-        hBox1.getChildren().add(loginContainer);
+        loginContainer.setTranslateX(scene.getWidth()*0.1);
+        loginContainer.setTranslateY(scene.getWidth()*0.1);
+        loginContainer.setAlignment(Pos.CENTER);
         VBox vBox = new VBox();
-        vBox.getChildren().addAll(hBox,hBox1);
+        vBox.getChildren().addAll(loginContainer,hBox1);
         vBox.setPrefSize(200,800);
         vBox.getStyleClass().add("vBox");
         login.setOnAction(e->{
             try {
                 initializeDatabase();
-                String str =  usernametextfield.getText();
+                String str = usernametextfield.getText();
                 if (str.contains("teller")) {
-                    show(tellerPage(stage),stage);
+                    show(tellerPage(stage), stage);
                 } else if (str.contains("admin")) {
-                    show(adminPage(stage),stage);
+                    show(adminPage(stage), stage);
+                } else if (UserController.check(passwordtextfield.getText(), usernametextfield.getText())) {
+                    show(customerPage(stage), stage);
                 }
-                else if(UserController.check(passwordtextfield.getText(),usernametextfield.getText()))
-                    show(customerPage(stage),stage);
                 else
                 {
-                    usernametextfield.setText("Wrong input");
+                    loginContainer.add(errorTxt, 1, 7);
                 }
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
@@ -398,8 +400,8 @@ public class BMS extends Application {
     }
 
     public  static  void initializeDatabase() throws SQLException, ClassNotFoundException {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-         connection = DriverManager.getConnection("jdbc:mysql://localhost/bms","eziraa","1234");
-         statement = connection.createStatement();
+//        Class.forName("com.mysql.cj.jdbc.Driver");
+//         connection = DriverManager.getConnection("jdbc:mysql://localhost/bms","eziraa","1234");
+//         statement = connection.createStatement();
     }
 }
