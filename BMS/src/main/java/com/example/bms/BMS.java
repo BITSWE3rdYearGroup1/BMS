@@ -6,10 +6,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -24,18 +21,18 @@ import javafx.stage.Stage;
 import java.sql.*;
 import java.util.Objects;
 
-import static com.example.bms.TellerView.btnSeeHistory;
-import static com.example.bms.TellerView.btnmanage;
+import static com.example.bms.TellerView.*;
+
 public class BMS extends Application {
     public static Statement statement ;
     public static Stage stage  ;
     public static  Connection connection;
+    public static boolean isLogin = false;
     public static Scene scene = new Scene(new Group() , 1000, 650);
     @Override
     public void start(Stage stage) {
         BMS.stage = stage;
         scene.getStylesheets().add("css/boostrap.css");
-
         show(loginPage(),stage); //This method is to call it when  we need to navigate from one page to other page
         //rather than call start method this means initiate the app again if we call start
 
@@ -49,7 +46,6 @@ public class BMS extends Application {
         text.setFill(Color.WHITE);
         text.setTranslateX(50);
         main.getStyleClass().add("bg-primary");
-
         ImageView logo = new ImageView(new Image(Objects.requireNonNull(BMS.class.getResourceAsStream("Image/banking.png"))));
         logo.setTranslateX(80);
         text.setTranslateX(100);
@@ -64,17 +60,18 @@ public class BMS extends Application {
         vBox.getChildren().addAll(main,parent);
         scene = new Scene(vBox, scene.getWidth(), scene.getHeight());
         stage.setScene(scene);
-        scene.getStylesheets().add(String.valueOf(BMS.class.getResource("styles.css")));;
+        scene.getStylesheets().add(String.valueOf(BMS.class.getResource("styles.css")));
         stage.show();
     }
     public static void main(String[] args) {
         launch();
     }
     public Parent loginPage(){
+        isLogin = true;
         GridPane loginContainer = new GridPane(); // this gridpane is Login information container
         Text welcometext = new Text("Welcome"); // This text to show welcome message
-        ImageView username = new ImageView(new Image(BMS.class.getResourceAsStream("Image/user.png")));
-        ImageView password = new ImageView(new Image(BMS.class.getResourceAsStream("Image/lock.png")));
+        ImageView username = new ImageView(new Image(Objects.requireNonNull(BMS.class.getResourceAsStream("Image/user.png"))));
+        ImageView password = new ImageView(new Image(Objects.requireNonNull(BMS.class.getResourceAsStream("Image/lock.png"))));
         Label errorTxt = new Label("Wrong Username or Password");
         Button login = new Button("Login"); // This Button is to login
         Hyperlink forgotPassword = new Hyperlink("Forgot password?"); // this hyper link is for forgot password
@@ -82,15 +79,16 @@ public class BMS extends Application {
         username.setTranslateY(-5);
         password.setTranslateX(15);
         password.setTranslateY(-5);
-        TextField usernametextfield = new TextField("User Name"); // This text field is to username
-        TextField passwordtextfield = new TextField("Password"); // This text field is to password
+        TextField usernametextfield = new TextField(); // This text field is to username
+        TextField passwordtextfield = new TextField(); // This text field is to password
+        usernametextfield.setPromptText("User Name");
+        passwordtextfield.setPromptText("Password");
         username.setScaleX(0.5);
         username.setScaleY(0.5);
         password.setScaleX(0.5);
         password.setScaleY(0.5);
         welcometext.setFont(Font.font("verdana", FontWeight.BOLD, 33));
         forgotPassword.setFont(Font.font("verdana", FontWeight.BOLD, 16));
-
         loginContainer.addColumn(1, welcometext);
         loginContainer.addRow(2, username);
         loginContainer.addRow(2, usernametextfield);
@@ -108,7 +106,7 @@ public class BMS extends Application {
         loginContainer.setAlignment(Pos.CENTER);
         VBox vBox = new VBox();
         vBox.getChildren().addAll(loginContainer,hBox1);
-        vBox.setPrefSize(200,800);
+        vBox.setPrefSize(190,800);
         vBox.getStyleClass().add("vBox");
         login.setOnAction(e->{
             try {
@@ -123,13 +121,15 @@ public class BMS extends Application {
                 }
                 else
                 {
-                    loginContainer.add(errorTxt, 1, 7);
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Wrong login");
+                    alert.setTitle("Login alert");
+                    alert.setContentText("Wrong password or username");
+                    alert.showAndWait();
                 }
-                } catch (SQLException ex) {
+                } catch (SQLException | ClassNotFoundException ex) {
                     throw new RuntimeException(ex);
-                } catch (ClassNotFoundException ex) {
-                throw new RuntimeException(ex);
-            }
+                }
         });
 
         return vBox;
@@ -176,8 +176,6 @@ public class BMS extends Application {
         accountImage.setTranslateX(20);
         account.setTranslateY(-430);
         account.setTranslateX(130);
-//        welcometext.setTranslateY(-30);
-//        welcometext.setTranslateX(100);
         welcometext.setFill(Color.color(1,1,1));
         welcometext.setFont(Font.font("verdana",FontWeight.BOLD,33));
         teller.setFont(Font.font("verdana",FontWeight.BOLD,14));

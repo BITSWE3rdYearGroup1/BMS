@@ -10,9 +10,9 @@ public class TransactionController {
             // Establish a connection
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/BMS", "eziraa", "1234");
             // Create a statement
-            PreparedStatement pstm = con.prepareStatement("select *from tbl_transaction");
+            PreparedStatement pstm = con.prepareStatement("select * from tbl_transaction where customer_id = ?");
+            pstm.setInt(1,User.user.getCustomerID());
             ResultSet resultSet = pstm.executeQuery();
-
             while (resultSet.next()) {
                 TransactionView.transactionView.transactionList.add(new Transaction(
                         resultSet.getInt(1),

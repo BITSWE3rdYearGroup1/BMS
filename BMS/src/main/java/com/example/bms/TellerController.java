@@ -1,5 +1,4 @@
 package com.example.bms;
-
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -7,7 +6,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -15,90 +13,97 @@ import java.nio.file.Files;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.Optional;
-
 import static com.example.bms.BMS.connection;
+import static com.example.bms.BMS.stage;
 import static com.example.bms.TellerView.*;
-
 public class TellerController {
     public static Parent createAcc() throws SQLException, ClassNotFoundException {
+        File[] selectedImage = new File[1];
         TellerView.btnBrowse.setOnAction(e -> {
             FileChooser fileChooser = new FileChooser();
-            File selectedImage = fileChooser.showOpenDialog(new Stage());
-            ImageView imageView = new ImageView(new Image(selectedImage.getAbsolutePath()));
+             selectedImage[0] = fileChooser.showOpenDialog(new Stage());
+            ImageView imageView = new ImageView(new Image(selectedImage[0].getAbsolutePath()));
             imageView.setFitHeight(50);
             imageView.setFitWidth(50);
             TellerView.btnBrowse.setGraphic(imageView);
+        });
         TellerView.create.setOnAction(event->{
             if (validateInput()) {
                 try {
                     if (checkAccount(txtFldAccNumber.getText()))
                         try {
-                        BMS.initializeDatabase();
-                        String sql = "insert into tbl_customer(first_name ,last_namae ,gender ,user_name ,password ,account_number ,balance ,phone,email ,registeration_date ,photo ,teller_id ) values(?,?,?,?,?,?,?,?,?,?,?,?)";
-                        PreparedStatement preparedStatement = BMS.connection.prepareStatement(sql);
-                        preparedStatement.setString(1,EmployeeView.txFldFName.getText());
-                        preparedStatement.setString(2,EmployeeView.txFldLName.getText());
-                        preparedStatement.setString(3,EmployeeView.txFldGender.getText());
-                        preparedStatement.setString(4,EmployeeView.txFldUName.getText());
-                        preparedStatement.setString(5,EmployeeView.txFldPass.getText());
-                        preparedStatement.setInt(6,Integer.parseInt(txtFldAccNumber.getText()));
-                        preparedStatement.setFloat(7, Float.parseFloat(txtFldBalance.getText()));
-                        preparedStatement.setString(8,TellerView.txFldEmail.getText());
-                        preparedStatement.setString(9,EmployeeView.txFldPhone.getText());
-                        LocalDate currentDate = LocalDate.now();
-                        preparedStatement.setDate(10, Date.valueOf(LocalDate.now()));
-                        if (selectedImage != null){
-                            byte[] imageByte = Files.readAllBytes(selectedImage.toPath());
-                            preparedStatement.setBytes(11, imageByte);
-                            preparedStatement.setInt(12,Teller.id);
-                            if (preparedStatement.executeUpdate()!=0){
-                                Alert alert = new Alert(Alert.AlertType.ERROR);
-                                alert.setTitle("Information");
-                                alert.setHeaderText("Alert Example");
-                                alert.setContentText( "INSERTED successfully Updated");
-                                // Display the alert
-                                alert.showAndWait();
+                            BMS.initializeDatabase();
+                            String sql = "insert into tbl_customer(first_name ,last_name ,gender ,user_name ,password ,account_number ,balance ,phone,email ,registration_date ,photo ,teller_id ) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+                            PreparedStatement preparedStatement = BMS.connection.prepareStatement(sql);
+                            preparedStatement.setString(1,EmployeeView.txFldFName.getText());
+                            preparedStatement.setString(2,EmployeeView.txFldLName.getText());
+                            preparedStatement.setString(3,EmployeeView.txFldGender.getText());
+                            preparedStatement.setString(4,EmployeeView.txFldUName.getText());
+                            preparedStatement.setString(5,EmployeeView.txFldPass.getText());
+                            preparedStatement.setString(6,TellerView.txtFldAccNumber.getText());
+                            preparedStatement.setFloat(7, Float.parseFloat(txtFldBalance.getText()));
+                            preparedStatement.setString(8,TellerView.txFldEmail.getText());
+                            preparedStatement.setString(9,EmployeeView.txFldPhone.getText());
+                            LocalDate currentDate = LocalDate.now();
+                            preparedStatement.setDate(10, Date.valueOf(LocalDate.now()));
+                            if (selectedImage != null){
+                                byte[] imageByte = Files.readAllBytes(selectedImage[0].toPath());
+                                preparedStatement.setBytes(11, imageByte);
+                                preparedStatement.setInt(12,Teller.id);
+                                if (preparedStatement.executeUpdate()!=0){
+                                    AdminView.txFldFName.clear();
+                                    TellerView.txtFldBalance.clear();
+                                    txtFldAccNumber.clear();
+                                    TellerView.txtFldConfirmPasswd.clear();
+                                    AdminView.txFldLName.clear();
+                                    AdminView.txFldGender.clear();
+                                    AdminView.txFldUName.clear();
+                                    AdminView.txFldPass.clear();
+                                    AdminView.txFldEmail.clear();
+                                    AdminView.txFldPhone.clear();
+                                    btnBrowse.setGraphic(new ImageView());
+                                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                                    alert.setTitle("Information");
+                                    alert.setHeaderText("Insertion alert");
+                                    alert.setContentText( "INSERTED successfully Updated");
+                                    // Display the alert
+                                    alert.showAndWait();
+
+                                }
+                                else {
+                                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                                    alert.setTitle("Information");
+                                    alert.setHeaderText("Insertion alert");
+                                    alert.setContentText("NOT INSERTED successfully Updated");
+                                    // Display the alert
+                                    alert.showAndWait();
+                                }
                             }
                             else {
                                 Alert alert = new Alert(Alert.AlertType.ERROR);
                                 alert.setTitle("Information");
-                                alert.setHeaderText("Alert Example");
+                                alert.setHeaderText("Insertion alert");
                                 alert.setContentText("NOT INSERTED successfully Updated");
                                 // Display the alert
                                 alert.showAndWait();
                             }
+                            BMS.statement =BMS.connection.createStatement();
+                            ResultSet resultSet =  BMS.statement.executeQuery("select * from tbl_customer");
+                        } catch (SQLException | ClassNotFoundException | IOException ex) {
+                            throw new RuntimeException(ex);
                         }
-                    else {
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setTitle("Information");
-                        alert.setHeaderText("Alert Example");
-                        alert.setContentText("NOT INSERTED successfully Updated");
-                        // Display the alert
-                        alert.showAndWait();
-                    }
-                    BMS.statement =BMS.connection.createStatement();
-                    ResultSet resultSet =  BMS.statement.executeQuery("select * from tbl_customer");
-                    while (resultSet.next())
-                        System.out.println(resultSet.getInt(1)+"     "+resultSet.getString(2)+ "  "+resultSet.getString(3));
-
-                } catch (SQLException | ClassNotFoundException | IOException ex) {
-                    throw new RuntimeException(ex);
-                }
                     else{
                         Alert alert = new Alert(Alert.AlertType.ERROR);
                         alert.setTitle("Information");
                         alert.setHeaderText("Info alert");
                         alert.setContentText("Account number is already exist");
-                        // Display the alert
                         alert.showAndWait();
                     }
-
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
 
             }
-        });
         });
         TellerView.back.setOnAction(e -> {
             BMS.show(new BMS().tellerPage(BMS.stage), BMS.stage);
@@ -120,21 +125,19 @@ public class TellerController {
             else
                 try {
                     String accNumber = txtFldAccNumber.getText();
-                    PreparedStatement preparedStatement = BMS.connection.prepareStatement("select customer_id, account_number from  tbl_customer where account_number = ?");
-                    preparedStatement.setString(1, accNumber);
-                    if (searchUser(accNumber)) {
+                      if (searchUser(accNumber)) {
                         name.setText("Name : " +Teller.user.getFirstName()+ " " + Teller.user.getSecondName());
                         Ugender.setText("Gender : "  + Teller.user.getGender());
                         TellerView.accNumber.setText("Account Number : "  + Teller.user.getAccNumber());
                         balance.setText("Current Balance : " +Teller.user.getBalance());
                         profile = new ImageView(Teller.user.getImage());
+                        txtFldAccNumber.clear();
                         BMS.show(TellerController.display(), BMS.stage);
                     }else{
                         Alert alert = new Alert(Alert.AlertType.ERROR);
                         alert.setTitle("Information");
                         alert.setHeaderText("Alert Example");
                         alert.setContentText("Account does not found");
-                        // Display the alert
                         alert.showAndWait();
                     }
 
@@ -290,11 +293,15 @@ public class TellerController {
                 preparedStatement1.execute();
                 boolean bool = preparedStatement1.getBoolean("@make");
                 if (bool) {
+                    Teller.user.setBalance(Teller.user.getBalance() + Double.parseDouble(txtFldAmount.getText()));
+                    txtFldAmount.clear();
+                    TellerView.balance.setText("Current balance : "+ Teller.user.getBalance());
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Information");
                     alert.setHeaderText("Update alert ");
                     alert.setContentText(txtFldAmount.getText() + " deposited successfully✅✅✅" );
                     alert.showAndWait();
+                    BMS.show(TellerController.depositMoney(),stage);
                 }
                 else
                 {
@@ -320,6 +327,15 @@ public class TellerController {
 public static Parent transferFund(){
         btnCompleteTransfer.setOnAction(e->{
             try {
+                if ((txtFldAccNumber.getText()).equalsIgnoreCase(Teller.user.getAccNumber()))
+                {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Information");
+                    alert.setHeaderText("Fund transfer Alert ");
+                    alert.setContentText("Dear teller you are trying to transfer money to the customer himself ");
+                    alert.showAndWait();
+                }
+                else
                 if (!checkAccount(txtFldAccNumber.getText()))
                 try{
                 CallableStatement preparedStatement1 = connection.prepareCall("{CALL spTransferFund(?,?,?,?,?)}");
@@ -329,15 +345,19 @@ public static Parent transferFund(){
                 preparedStatement1.setInt(3,Teller.id);
                 preparedStatement1.setInt(4,Teller.user.getCustomerID());
                 preparedStatement1.registerOutParameter(5,Types.BOOLEAN);
-                preparedStatement1.execute();
+                preparedStatement1.executeUpdate();
                 boolean bool = preparedStatement1.getBoolean("@make");
                 if (bool) {
+                    Teller.user.setBalance(Teller.user.getBalance() - Double.parseDouble(txtFldAmount.getText()));
+                    txtFldAmount.clear();
+                    txtFldAccNumber.clear();
+                    TellerView.balance.setText("Current balance : "+ Teller.user.getBalance());
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Information");
-                    alert.setHeaderText("Alert Example");
-                    alert.setContentText("Transferred successfully");
-                    // Display the alert
+                    alert.setHeaderText("Fund transfer Alert ");
+                    alert.setContentText( Teller.user.getBalance() + "Transferred successfully");
                     alert.showAndWait();
+                    BMS.show(TellerController.transferFund(),stage);
                 }
                 else
                 {
@@ -345,7 +365,6 @@ public static Parent transferFund(){
                     alert.setTitle("Information");
                     alert.setHeaderText("Alert Example");
                     alert.setContentText("Your balance is low");
-                    // Display the alert
                     alert.showAndWait();
                 }
             } catch (SQLException ex) {
@@ -373,6 +392,7 @@ public static Parent transferFund(){
     }
 public static Parent widthDrawMoney(){
          btnCompleteWithdraw.setOnAction(e->{
+             if( Double.parseDouble(TellerView.txtFldAmount.getText()) < Teller.user.getBalance())
              try {
                  CallableStatement preparedStatement1 = connection.prepareCall("{CALL spWithDraw(?,?,?,?)}");
                  preparedStatement1.setDouble(1, Double.parseDouble(TellerView.txtFldAmount.getText()));
@@ -383,11 +403,15 @@ public static Parent widthDrawMoney(){
                  preparedStatement1.execute();
                  boolean bool = preparedStatement1.getBoolean("@make");
                  if (bool) {
+                         Teller.user.setBalance(Teller.user.getBalance() - Double.parseDouble(txtFldAmount.getText()));
+                         txtFldAmount.clear();
+                         TellerView.balance.setText("Current balance : "+ Teller.user.getBalance());
                      Alert alert = new Alert(Alert.AlertType.INFORMATION);
                      alert.setTitle("Information");
                      alert.setHeaderText("Update alert ");
                      alert.setContentText(txtFldAmount.getText() + " Withdrawn successfully✅✅✅" );
                      alert.showAndWait();
+                     BMS.show(TellerController.widthDrawMoney(),BMS.stage);
                  }
                  else
                  {
@@ -405,12 +429,19 @@ public static Parent widthDrawMoney(){
                  alert.showAndWait();
                  throw new RuntimeException(ex);
              }
+             else {
+                 Alert alert = new Alert(Alert.AlertType.ERROR);
+                 alert.setTitle("Information");
+                 alert.setHeaderText("Insufficient Alert");
+                 alert.setContentText("Dear teller this account does not hav enough money to withdraw");
+                 alert.showAndWait();
+             }
          });
         return TellerView.tellerHome("withDraw");
     }
     public static boolean searchUser(String accNumber) throws SQLException, ClassNotFoundException {
         BMS.initializeDatabase();
-        PreparedStatement preparedStatement =BMS.connection.prepareStatement("\tselect customer_id,first_name , last_namae ,gender, account_number,balance ,photo from  tbl_customer where account_number = ?");
+        PreparedStatement preparedStatement =BMS.connection.prepareStatement("select customer_id,first_name , last_name ,gender, account_number,balance ,photo from  tbl_customer where account_number = ?");
         preparedStatement.setString(1,accNumber);
         ResultSet resultset = preparedStatement.executeQuery();
         if (resultset.next()){
@@ -418,7 +449,7 @@ public static Parent widthDrawMoney(){
                 Teller.user.setFirstName(resultset.getString(2));
                 Teller.user.setSecondName(resultset.getString(3));
                 Teller.user.setGender(resultset.getString(4));
-                Teller.user.setAccNumber(Integer.parseInt(resultset.getString(5)));
+                Teller.user.setAccNumber((resultset.getString(5)));
                 Teller.user.setBalance(Double.parseDouble(resultset.getString(6)));
                 Teller.user.setPhoto(new Image(new ByteArrayInputStream(resultset.getBytes(7))));
                 return true;
@@ -430,8 +461,6 @@ public static Parent widthDrawMoney(){
         preparedStatement.setString(1,account);
         ResultSet resultSet = preparedStatement.executeQuery();
 
-        if (resultSet.next())
-            return false;
-        return true;
+        return !resultSet.next();
     }
 }

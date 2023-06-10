@@ -51,7 +51,6 @@ public class AdminView  extends EmployeeView{
     public  static Parent getHome(String type)
     {
         VBox leftMenu = new VBox();
-
         ImageView tellerImage = new ImageView(new Image(Objects.requireNonNull(AdminView.class.getResourceAsStream("Image/teller-modified.png")))); // This is to teller image
         ImageView customerImage = new ImageView(new Image(Objects.requireNonNull(AdminView.class.getResourceAsStream("Image/customer-modified.png"))));
         ImageView accountImage = new ImageView(new Image(Objects.requireNonNull(AdminView.class.getResourceAsStream("Image/account-modified.png"))));
@@ -74,7 +73,6 @@ public class AdminView  extends EmployeeView{
         header.getChildren().add(text);
         VBox allPage = new VBox();
         HBox body = new HBox();
-
         allPage.setStyle("-fx-text-fill:green;\n" +
                 "-fx-font-weight:bold;\n" +
                 "-fx-font-size:15;\n" +
@@ -92,7 +90,6 @@ public class AdminView  extends EmployeeView{
         main.getStyleClass().add("body");
         main.setMaxHeight(500);
         body.getChildren().addAll(leftMenu,main);
-
         if (type.equalsIgnoreCase("create")) {
             text.setText("Create account Page");
             body.setSpacing(30);
@@ -203,7 +200,6 @@ public class AdminView  extends EmployeeView{
         registrationDate.setMinWidth(100);
         photo.setMinWidth(100);
         branchID.setMinWidth(100);
-        EmployeeView.tellerTableView.getColumns().clear();
         tellerID.setCellValueFactory(new PropertyValueFactory<>("teller_id"));
         firstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         secondName.setCellValueFactory(new PropertyValueFactory<>("secondName"));
@@ -237,7 +233,7 @@ public class AdminView  extends EmployeeView{
             }
         });
         branchID.setCellValueFactory(new PropertyValueFactory<Teller,Integer>("BranchID"));
-        AdminView.adminView.tellerTableView.getColumns().addAll(tellerID,firstName,secondName,gender,username,password,phone, email,registrationDate,photo,branchID);
+        tellerTableView.getColumns().addAll(tellerID,firstName,secondName,gender,username,password,phone, email,registrationDate,photo,branchID);
         phone.setPrefWidth(UPdate.resize(phone.getText()));
         firstName.setPrefWidth(UPdate.resize(firstName.getText()));
         secondName.setPrefWidth(UPdate.resize(secondName.getText()));
@@ -248,9 +244,9 @@ public class AdminView  extends EmployeeView{
         registrationDate.setPrefWidth(UPdate.resize("registration"));
         StackPane stackPane = new StackPane();
         stackPane.setMaxSize(BMS.scene.getWidth()*0.7,500);
-        stackPane.getChildren().add(AdminView.adminView.tellerTableView);
+        stackPane.getChildren().add(tellerTableView);
         stackPane.setMaxSize(BMS.scene.getWidth()*0.52,500);
-        AdminView.adminView.tellerTableView.setStyle("-fx-foreground-color:red");
+        tellerTableView.setStyle("-fx-foreground-color:red");
         stackPane.setStyle("-fx-background-color:red");
         VBox centeral = new VBox();
         centeral.setSpacing(10);
@@ -262,7 +258,7 @@ public class AdminView  extends EmployeeView{
         centeral.getChildren().addAll(searchContainer,stackPane);
         return centeral;
     }
-    class UPdate {
+    static class UPdate {
         public static double AUTO ;
         public static double resize(String object){
             AUTO = object.length()*14;
@@ -296,7 +292,6 @@ public class AdminView  extends EmployeeView{
         TellerView.registrationDate.setMinWidth(100);
         TellerView.photo.setMinWidth(100);
         TellerView.branchID.setMinWidth(100);
-        EmployeeView.tellerTableView.getColumns().clear();
         TellerView.tellerID.setCellValueFactory(new PropertyValueFactory<>("customerID"));
         TellerView.firstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         TellerView.secondName.setCellValueFactory(new PropertyValueFactory<>("secondName"));
@@ -307,13 +302,11 @@ public class AdminView  extends EmployeeView{
         TellerView.registrationDate.setCellValueFactory(new PropertyValueFactory<>("registrationDate"));
         TellerView.phone.setCellValueFactory(new PropertyValueFactory<>("phone"));
         TellerView.photo.setCellValueFactory(cellData -> cellData.getValue().imageProperty());
-
         TellerView.photo.setCellFactory(new Callback<>() {
             @Override
             public TableCell<User, Image> call(TableColumn<User, Image> param) {
                 return new TableCell<>() {
                     private final ImageView imageView = new ImageView();
-
                     @Override
                     protected void updateItem(Image item, boolean empty) {
                         super.updateItem(item, empty);
@@ -329,41 +322,35 @@ public class AdminView  extends EmployeeView{
                                 ImageView clickedImage = (ImageView) e.getSource();
                                 TableCell<?, ?> clickedCell = (TableCell<?, ?>) clickedImage.getParent();
                                 TableRow<?> clickedRow = (TableRow<?>) clickedCell.getParent();
-
                                 // Get the index of the clicked row
                                 int rowIndex = clickedRow.getIndex();
-
                                 // Retrieve the corresponding object from the data source
                                 User objectToDelete = TellerView.tellerView.userTableView.getItems().get(rowIndex);
-
+                                objectToDelete = userTableView.getSelectionModel().getSelectedItem();
                                 // Create and show the confirmation alert
                                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                                 alert.setTitle("Confirmation");
                                 alert.setHeaderText("Delete Confirmation");
                                 alert.setContentText("Are you sure you want to delete this item?");
-
                                 // Customize the buttons
                                 ButtonType deleteButton = new ButtonType("Delete", ButtonBar.ButtonData.OK_DONE);
                                 ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
                                 alert.getButtonTypes().setAll(deleteButton, cancelButton);
-
                                 // Show the alert and handle the result
                                 Optional<ButtonType> result = alert.showAndWait();
                                 if (result.isPresent() && result.get() == deleteButton) {
                                     // User clicked "Delete"
                                     getTableView().getItems().remove(objectToDelete);
-                                } else {
-                                    // User clicked "Cancel" or closed the alert
-                                    // Handle any other actions or do nothing
-                                }
+                                }  // User clicked "Cancel" or closed the alert
+                                // Handle any other actions or do nothing
+
                             });
                         }
                     }
                 };
             }
         });
-
-        TellerView.tellerView.userTableView.getColumns().addAll(TellerView.tellerID,TellerView.firstName,TellerView.secondName,TellerView.gender,TellerView.username,TellerView.password,TellerView.phone, TellerView.email,TellerView.registrationDate,TellerView.photo);
+        userTableView.getColumns().addAll(TellerView.tellerID,TellerView.firstName,TellerView.secondName,TellerView.gender,TellerView.username,TellerView.password,TellerView.phone, TellerView.email,TellerView.registrationDate,TellerView.photo);
         TellerView.phone.setPrefWidth(AdminView.UPdate.resize(phone.getText()));
         TellerView.firstName.setPrefWidth(AdminView.UPdate.resize(firstName.getText()));
         TellerView.secondName.setPrefWidth(AdminView.UPdate.resize(secondName.getText()));
@@ -373,10 +360,7 @@ public class AdminView  extends EmployeeView{
         TellerView.email.setPrefWidth(AdminView.UPdate.resize("email.getText()"));
         TellerView.registrationDate.setPrefWidth(AdminView.UPdate.resize("registration"));
         StackPane stackPane = new StackPane();
-        TellerView.tellerView.userTableView.setMinSize(700,500);
-        stackPane.getChildren().add(TellerView.tellerView.userTableView);
-        HBox hbox = new HBox();
-        stackPane.setMaxSize(BMS.scene.getWidth()*0.52,500);
+        stackPane.getChildren().add(userTableView);
         VBox centeral = new VBox();
         centeral.setSpacing(10);
         HBox searchContainer = new HBox();

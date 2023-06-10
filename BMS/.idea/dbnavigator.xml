@@ -13,83 +13,90 @@
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="0a93eba9-476e-4745-a919-ad03edbb3d6c">
-      <console name="My Connection" type="STANDARD" schema="bms" session="Main"><![CDATA[create database BMSS
-use BMSS
-create table tbl_branch (
-	branch_id int  primary key,
-	branch_Name varchar(30),
-	region varchar(30) default 'Amhara',
-	zone_ varchar(30) default 'Bahir Dar',
-	woreda varchar(30),
-	kebele varchar(30)
+      <console name="My Connection" type="STANDARD" schema="bms" session="Main"><![CDATA[CREATE DATABASE BMS
+USE BMS
+CREATE TABLE tbl_branch (
+	branch_id INT  PRIMARY KEY AUTO_INCREMENT,
+	branch_Name  VARCHAR(30),
+	region VARCHAR(30) DEFAULT 'Amhara',
+	zone VARCHAR(30) DEFAULT 'Bahir Dar',
+	woreda VARCHAR(30),
+	sub_city VARCHAR(30)
 )
+select balance from tbl_customer
 -- create admin table
-create table tbl_admin(
-	admin_id int   primary key,
+CREATE TABLE tbl_admin(
+	admin_id INT PRIMARY KEY AUTO_INCREMENT,
 	first_name varchar(20),
-	last_namae varchar(20),
-	gender char,
+	last_name varchar(20),
+	gender varchar(12),
 	user_name varchar(15),
 	password varchar(15),
-	phone int,
+	phone varchar(15),
 	email varchar(30),
 	registeration_date date
 )
-
+drop table tbl_admin
 -- create teller table
 create table tbl_teller (
 	teller_id int  primary key AUTO_INCREMENT,
 	first_name varchar(20),
-	last_namae varchar(20),
-	gender char,
+	last_name varchar(20),
+	gender VARCHAR(23),
 	user_name varchar(15),
 	password varchar(15),
 	phone varchar(21),
 	email varchar(30),
-	registeration_date date,
+	registration_date date,
 	branch_ID int ,
 	photo longblob,
 	constraint tbl_tellerFK1 foreign key(branch_ID) references tbl_branch(branch_ID)
 	)
+	drop table tbl_customer
 -- create customer table
 create table tbl_customer (
-	customer_id int  primary key AUTO_INCREMENT,
-	first_name varchar(20),
-	last_namae varchar(20),
-	gender char,
-	user_name varchar(15),
-	password varchar(15),
-	account_number int,
-	balance float,
-	phone varchar(),
-	email varchar(30),
-	photo longblob,
-	registeration_date date
-)t
+customer_id int  primary key AUTO_INCREMENT,
+first_name varchar(20),
+last_name varchar(20),
+gender VARCHAR(23),
+user_name varchar(15),
+password varchar(15),
+account_number varchar(15),
+balance float,
+phone varchar(16),
+email varchar(30),
+photo longblob,
+registration_date date,
+teller_id int,
+constraint tbl_customerFK1 foreign key(teller_id) references tbl_teller(teller_id)
+)
+use bms
+drop table  tbl_transaction
+drop table tbl_customer
+select  * from tbl_customer
 --create transaction table
-create table tbl_transaction(
+create table tbl_transactions(
 	transaction_id INT AUTO_INCREMENT PRIMARY KEY,
 	transaction_type varchar(30),
-	account_number int,
+	account_number varchar(15),
 	amount float,
-	destination int null,
+	destination varchar(15) ,
 	transaction_date date,
 	customer_id int ,
 	constraint tbl_transaction_FK1 foreign key(customer_id) references tbl_customer(customer_id),
-	teller_id int,
-	 constraint tbl_transaction_FK2 foreign key(teller_id) references tbl_teller(teller_id)
+	teller_id int
 )
-CREATE TABLE tbl_transaction (
+use bms
+CREATE TABLE tbl_transactions (
     transaction_id INT AUTO_INCREMENT PRIMARY KEY,
     transaction_type VARCHAR(30),
-    account_number INT,
+    account_number VARCHAR(15),
     amount FLOAT,
-    destination INT NULL,
+    destination VARCHAR(15) NULL,
     transaction_date DATE,
     customer_id INT,
     teller_id INT,
-    CONSTRAINT tbl_transaction_FK1 FOREIGN KEY (customer_id) REFERENCES tbl_customer(customer_id),
-    CONSTRAINT tbl_transaction_FK2 FOREIGN KEY (teller_id) REFERENCES tbl_teller(teller_id)
+    CONSTRAINT tbl_transaction_FK1 FOREIGN KEY (customer_id) REFERENCES tbl_customer(customer_id)
 );
 CREATE PROCEDURE spTransferFund(
     IN amount DECIMAL(10, 2),
@@ -100,17 +107,15 @@ CREATE PROCEDURE spTransferFund(
 )
 BEGIN
     DECLARE initial DECIMAL(10, 2) DEFAULT 0.0 ;
-    DECLARE acc INT DEFAULT 0;
+    DECLARE acc VARCHAR(15) DEFAULT 0;
     DECLARE id INT DEFAULT 0;
     SELECT balance INTO initial FROM tbl_customer WHERE customer_id = customer;
-    IF initial > amount THEN
-        UPDATE tbl_customer SET balance = balance - 45 WHERE customer_id = 1;
+        UPDATE tbl_customer SET balance = balance - amount WHERE customer_id = customer;
         UPDATE tbl_customer SET balance = balance + amount WHERE account_number = destination;
         SELECT account_number INTO acc FROM tbl_customer WHERE customer_id = customer;
         SELECT customer_id INTO id FROM tbl_customer WHERE account_number = destination;
         INSERT INTO tbl_transaction (transaction_type, account_number, amount, destination, transaction_date, customer_id, teller_id)
         VALUES ('Transfer', acc, amount, destination, DATE_FORMAT(CURDATE(), '%Y-%m-%d'), customer, teller);
-        
         INSERT INTO tbl_transaction (transaction_type, account_number, amount, destination, transaction_date, customer_id, teller_id)
         VALUES ('Transfer', acc, amount, destination, DATE_FORMAT(CURDATE(), '%Y-%m-%d'), id, teller);
         SET make = true;
@@ -128,8 +133,8 @@ CREATE PROCEDURE spDeposit(
 )
 BEGIN
     DECLARE id INT DEFAULT 0;
-    DECLARE acc INT DEFAULT 0;
-        UPDATE tbl_customer SET balance = balance - amount WHERE customer_id = customer;
+    DECLARE acc VARCHAR(23) DEFAULT 0;
+        UPDATE tbl_customer SET balance = balance + amount WHERE customer_id = customer;
         SELECT account_number INTO acc FROM tbl_customer WHERE customer_id = customer;
         INSERT INTO tbl_transaction (transaction_type, amount, destination, transaction_date, customer_id, teller_id)
         VALUES ('Deposit', amount, acc, DATE_FORMAT(CURDATE(), '%Y-%m-%d'), customer, teller);
@@ -144,14 +149,22 @@ CREATE PROCEDURE spWithDraw(
     OUT make BOOL
 )
 BEGIN
-    DECLARE acc INT DEFAULT 0;
-         UPDATE tbl_customer SET balance = balance + amount WHERE customer_id = customer;
+    DECLARE acc VARCHAR(23) DEFAULT '9';
+         UPDATE tbl_customer SET balance = balance - amount WHERE customer_id = customer;
         SELECT account_number INTO acc FROM tbl_customer WHERE customer_id = customer;
         INSERT INTO tbl_transaction (transaction_type,account_number, amount, transaction_date, customer_id, teller_id)
         VALUES ('Withdraw',acc, amount, DATE_FORMAT(CURDATE(), '%Y-%m-%d'), customer, teller);
         SET make = true;
 END
 
+CREATE PROCEDURE spDeleteTeller(
+IN id int
+)
+BEGIN
+    UPDATE tbl_customer SET teller_id = 0 WHERE teller_id = id;
+    UPDATE tbl_transaction SET teller_id = 0 WHERE teller_id = id;
+    DELETE FROM tbl_customer WHERE customer_id = id;
+END
 
 
 SHOW PROCEDURE STATUS;

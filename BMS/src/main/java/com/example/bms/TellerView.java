@@ -18,8 +18,8 @@ import java.util.Objects;
 
 public class TellerView extends EmployeeView{
     public static final TextField txtFldBalance = new TextField();
-    public  TableView<User> userTableView = new TableView<>();
-    public  ObservableList<User> userList = FXCollections.observableArrayList();
+    public static TableView<User> userTableView = new TableView<>();
+    public static ObservableList<User> userList = FXCollections.observableArrayList();
     public static TableColumn<User,Integer> tellerID = new TableColumn<>("Customer ID");
 
     public static TableColumn<User, String> firstName =  new TableColumn<>("First Name");
@@ -178,7 +178,7 @@ public static Parent manageUserAccount(){
         hBox.setSpacing(30);
         hBox.setTranslateY(200);
         manageUserAccountContainer.getChildren().add(hBox);
-        manageUserAccountContainer.setMinHeight(600);
+        hBox.setAlignment(Pos.TOP_CENTER);
         return manageUserAccountContainer;
 }
 public static Parent displayUserInfo(String type){

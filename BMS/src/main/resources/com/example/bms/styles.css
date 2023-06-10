@@ -68,7 +68,7 @@
 .table-cell{
 -fx-background-color: #206bc2;
 -fx-border-width: 0 0 1 0;
--fx-border-color:red;
+-fx-border-color:black;
 -fx-min-width:100px;
 }
 .body{

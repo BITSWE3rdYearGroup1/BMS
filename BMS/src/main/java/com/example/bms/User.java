@@ -14,28 +14,28 @@ import java.util.Objects;
 public class User {
     public static User user = new User();
     public    long accountNumber;
-    public static int id;
+    public  int id;
     private final SimpleIntegerProperty customerID;
     private final SimpleStringProperty firstName;
     private final SimpleStringProperty secondName;
     private final SimpleStringProperty gender;
     private final SimpleStringProperty username;
     private final SimpleStringProperty password;
-    private final SimpleIntegerProperty accNumber ;
+    private final SimpleStringProperty accNumber ;
     private final SimpleDoubleProperty balance;
     private final SimpleStringProperty email;
     private final SimpleStringProperty phone;
     private final SimpleStringProperty registrationDate;
     private Image photo;
 
-    public User(int customerID, String firstName, String secondName, String gender, String username, String password, int accNumber, double balance, String email, String phone, String registrationDate, Image photo) {
+    public User(int customerID, String firstName, String secondName, String gender, String username, String password, String accNumber, double balance, String email, String phone, String registrationDate, Image photo) {
         this.customerID =new SimpleIntegerProperty(customerID);
         this.firstName = new SimpleStringProperty(firstName);
         this.secondName = new SimpleStringProperty(secondName);
         this.gender =new SimpleStringProperty( gender);
         this.username =new SimpleStringProperty( username);
         this.password = new SimpleStringProperty(password);
-        this.accNumber = new SimpleIntegerProperty(accNumber);
+        this.accNumber = new SimpleStringProperty(accNumber);
         this.balance =new SimpleDoubleProperty( balance);
         this.email = new SimpleStringProperty(email);
         this.phone = new SimpleStringProperty(phone);
@@ -50,7 +50,7 @@ public User(){
     this.gender =new SimpleStringProperty( "gender");
     this.username =new SimpleStringProperty( "username");
     this.password = new SimpleStringProperty("password");
-    this.accNumber = new SimpleIntegerProperty(0);
+    this.accNumber = new SimpleStringProperty("0");
     this.balance =new SimpleDoubleProperty( 0);
     this.email = new SimpleStringProperty("email");
     this.phone = new SimpleStringProperty("phone");
@@ -130,15 +130,15 @@ public User(){
         this.password.set(password);
     }
 
-    public  int getAccNumber() {
+    public  String getAccNumber() {
         return accNumber.get();
     }
 
-    public  SimpleIntegerProperty accNumberProperty() {
+    public  SimpleStringProperty accNumberProperty() {
         return accNumber;
     }
 
-    public  void setAccNumber(int accNumber) {
+    public  void setAccNumber(String accNumber) {
         this.accNumber.set(accNumber);
     }
 

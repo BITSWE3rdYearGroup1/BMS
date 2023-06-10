@@ -1,22 +1,21 @@
 package com.example.bms;
-
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.*;
 import java.time.LocalDate;
-
-
+import java.util.Optional;
+import static com.example.bms.AdminView.txFldBranchID;
 import static com.example.bms.TellerView.*;
-
 public class AdminController {
     public static Parent createTellerAcc(){
         AdminView.teller.setOnAction(e->{
@@ -39,30 +38,40 @@ public class AdminController {
             try {
                 byte[] imagebyte = Files.readAllBytes(selectedImage.toPath());
         AdminView.btnCreateAcc.setOnAction(event->{
+            if (validateTeller())
             try {
                 BMS.initializeDatabase();
-                String sql = "insert into tbl_teller(first_name ,last_namae ,gender ,user_name ,password ,phone ,email ,registeration_date,  branch_ID,photo) values(?,?,?,?,?,?,?,?,'1',?)";
+                String sql = "insert into tbl_teller(first_name ,last_name ,gender ,user_name ,password ,phone ,email ,registration_date,  branch_ID,photo) values(?,?,?,?,?,?,?,?,'1',?)";
                 PreparedStatement preparedStatement = BMS.connection.prepareStatement(sql);
                 preparedStatement.setString(1,AdminView.txFldFName.getText());
                 preparedStatement.setString(2,AdminView.txFldLName.getText());
                 preparedStatement.setString(3,AdminView.txFldGender.getText());
                 preparedStatement.setString(4,AdminView.txFldUName.getText());
                 preparedStatement.setString(5,AdminView.txFldPass.getText());
-                preparedStatement.setInt(6,Integer.parseInt(AdminView.txFldPhone.getText()));
+                preparedStatement.setString(6,AdminView.txFldPhone.getText());
                 preparedStatement.setString(7,AdminView.txFldEmail.getText());
                 LocalDate currentDate = LocalDate.now();
                 preparedStatement.setDate(8, Date.valueOf(LocalDate.now()));
                 preparedStatement.setBytes(9,imagebyte);
                 preparedStatement.executeUpdate();
+                AdminView.txFldFName.clear();
+                txFldBranchID.clear();
+                TellerView.txtFldConfirmPasswd.clear();
+                AdminView.txFldLName.clear();
+                AdminView.txFldGender.clear();
+                AdminView.txFldUName.clear();
+                AdminView.txFldPass.clear();
+                AdminView.txFldEmail.clear();
+                AdminView.txFldPhone.clear();
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Information");
-                alert.setHeaderText("Alert Example");
-                alert.setContentText("Inserted  successfully");
+                alert.setHeaderText("Insertion Alert ");
+                alert.setContentText("The user Inserted  successfully");
                 alert.showAndWait();
             } catch (SQLException | ClassNotFoundException ex) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Information");
-                alert.setHeaderText("Alert Example");
+                alert.setHeaderText("Insertion Alert");
                 alert.setContentText("Not Inserted  successfully");
                 // Display the alert
                 alert.showAndWait();
@@ -81,15 +90,7 @@ public class AdminController {
     }
     public static Parent seeTellerInfo(){
         new AdminView();
-        EmployeeView.tellerTableView.setOnMouseClicked(e->{
-                Teller teller = EmployeeView.tellerTableView.getSelectionModel().getSelectedItem();
-                if (EmployeeView.tellerTableView.getSelectionModel().getSelectedItem()!=(null))
-                {  Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setContentText(teller.getFirstName() + " " + teller.getSecondName());
-                alert.setTitle("Information message");
-                alert.showAndWait();
-            }
-        });
+        tellerTableView = new TableView<>();
         AdminView.btnSearchTeller.setOnAction(e->{
             if (AdminView.txtFldTeller.getText().equalsIgnoreCase(""))
             {
@@ -123,13 +124,10 @@ public class AdminController {
                     throw new RuntimeException(ex);
                 }
         });
-
         AdminView.btnAccount.setOnAction(e->{
-
             BMS.show( AdminController.createTellerAcc(),BMS.stage);
         });
         AdminView.customer.setOnAction(e->{
-
             BMS.show( AdminController.seeUserInfo(),BMS.stage);
         });
         try {
@@ -153,8 +151,7 @@ public class AdminController {
                 new Image(new ByteArrayInputStream( resultSet.getBytes(11))),
                 resultSet.getInt(10)));
             }
-            AdminView.adminView.tellerTableView.getItems().clear();
-            AdminView.adminView.tellerTableView.setItems(AdminView.adminView.tellerList);
+            tellerTableView.setItems(AdminView.adminView.tellerList);
             con.close();
 
         } catch (SQLException e) {
@@ -164,6 +161,7 @@ public class AdminController {
     }
     public static Parent seeUserInfo(){
         TellerView.EmployeeView();
+        userTableView = new TableView<>();
         AdminView.btnSearchUser.setOnAction(e->{
             if (AdminView.txtFldAccNumber.getText().equalsIgnoreCase(""))
             {
@@ -182,8 +180,6 @@ public class AdminController {
                         AdminView.accNumber.setText("Account Number : "  + Admin.user.getAccNumber());
                         AdminView.balance.setText("Current Balance : " +Admin.user.getBalance());
                         AdminView.emailS.setText("Email : " +Admin.user.getEmail());
-                        System.out.println(Admin.user.getEmail());
-                        System.out.println(Admin.user.getPhone());
                         AdminView.phoneNumber.setText("Phone Number : " +Admin.user.getPhone());
                         AdminView.profile = new ImageView(Admin.user.getImage());
                         BMS.show(displayUser(), BMS.stage);
@@ -213,24 +209,25 @@ public class AdminController {
             // Create a statement
             PreparedStatement pstm = con.prepareStatement("select *from tbl_customer");
             ResultSet resultSet = pstm.executeQuery();
-
+            userList.clear();
             while (resultSet.next()) {
-                TellerView.tellerView.userList.add(new User(
+                TellerView.userList.add(new User(
                         resultSet.getInt(1),
                         resultSet.getString(2),
                         resultSet.getString(3),
                         resultSet.getString(4),
                         resultSet.getString(5),
                         resultSet.getString(6),
-                        resultSet.getInt(7),
+                        resultSet.getString(7),
                         resultSet.getFloat(8),
                         resultSet.getString(9),
                         resultSet.getString(10),
                         resultSet.getString(12),
+
                         new Image(new ByteArrayInputStream(resultSet.getBytes(11)))));
             }
-            TellerView.tellerView.userTableView.getItems().clear();
-            TellerView.tellerView.userTableView.setItems(TellerView.tellerView.userList);
+            TellerView.userTableView.getItems().clear();
+            TellerView.userTableView.setItems(TellerView.userList);
             con.close();
 
         } catch (SQLException e) {
@@ -248,13 +245,19 @@ public class AdminController {
     }
     public static  Parent handleDelete(){
         AdminView.btnDelete.setOnAction(e->{
-
         });
         return AdminView.getHome("delete");
     }
+
+    /**
+     * @param accNumber
+     * @return
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
     public static boolean findUser(String accNumber) throws SQLException, ClassNotFoundException {
         BMS.initializeDatabase();
-        PreparedStatement preparedStatement =BMS.connection.prepareStatement("\tselect customer_id,first_name , last_namae ,gender, account_number,balance ,photo , email, phone from  tbl_customer where account_number = ?");
+        PreparedStatement preparedStatement =BMS.connection.prepareStatement("\tselect customer_id,first_name , last_name ,gender, account_number,balance ,photo , email, phone from  tbl_customer where account_number = ?");
         preparedStatement.setString(1,accNumber);
         ResultSet resultset = preparedStatement.executeQuery();
         if (resultset.next()){
@@ -262,7 +265,7 @@ public class AdminController {
             Admin.user.setFirstName(resultset.getString(2));
             Admin.user.setSecondName(resultset.getString(3));
             Admin.user.setGender(resultset.getString(4));
-            Admin.user.setAccNumber(Integer.parseInt(resultset.getString(5)));
+            Admin.user.setAccNumber((resultset.getString(5)));
             Admin.user.setBalance(Double.parseDouble(resultset.getString(6)));
             Admin.user.setPhone(resultset.getString(9));
             Admin.user.setEmail(resultset.getString(8));
@@ -273,7 +276,7 @@ public class AdminController {
     }
     public static boolean findTeller(String firstName) throws SQLException, ClassNotFoundException {
         BMS.initializeDatabase();
-        PreparedStatement preparedStatement =BMS.connection.prepareStatement("\tselect teller_id,first_name , last_namae ,gender ,photo , email, phone ,branch_ID from  tbl_teller where first_name = ?");
+        PreparedStatement preparedStatement =BMS.connection.prepareStatement("select teller_id,first_name , last_name ,gender ,photo , email, phone ,branch_ID from  tbl_teller where first_name = ?");
         preparedStatement.setString(1,firstName);
         ResultSet resultset = preparedStatement.executeQuery();
         if (resultset.next()){
@@ -299,6 +302,12 @@ public class AdminController {
                 preparedStatement1.executeUpdate();
                 if (preparedStatement.executeUpdate() > 0){
                     BMS.show(AdminController.seeUserInfo(),BMS.stage);
+                  new Thread(()-> {
+                      Alert alert = new Alert(Alert.AlertType.ERROR);
+                      alert.setTitle("Information");
+                      alert.setHeaderText("Delete Alert");
+                      alert.setContentText("Account successfully  deleted");
+                  }).start();
                 }
                 else {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -324,6 +333,13 @@ public class AdminController {
                 preparedStatement1.executeUpdate();
                 if (preparedStatement.executeUpdate() > 0){
                     BMS.show(AdminController.seeTellerInfo(),BMS.stage);
+                new Thread(()-> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Information");
+                    alert.setHeaderText("Delete Alert");
+                    alert.setContentText("Account successfully  deleted");
+                    alert.showAndWait();
+                }).start();
                 }
                 else {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -343,7 +359,6 @@ public class AdminController {
             AdminView.txFldEmail.setText(Admin.teller.getEmail());
             AdminView.txFldPhone.setText(Admin.teller.getPhone());
             AdminView.btnCreateAcc.setText("UPDATE");
-
         });
         return AdminView.getHome("teller s");
     }
@@ -351,6 +366,115 @@ public class AdminController {
 
         return  AdminView.getHome("create");
     }
-
+    public static boolean validateTeller(){
+        if (AdminView.txFldFName.getText().isEmpty()) {
+            txFldFName.setStyle("-fx-border-color: red;");
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Information");
+            alert.setHeaderText("Waring Alert");
+            alert.setContentText( "First Name  is Empty");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (((Optional<?>) result).isPresent() && result.get() == ButtonType.OK) {
+                txFldFName.setStyle("-fx-border-color: black;");
+            } else {
+                txFldFName.setStyle("-fx-border-color: black;");
+            }
+            return false;
+        }
+        else if (txFldLName.getText().isEmpty()) {
+            txFldLName.setStyle("-fx-border-color: red;");
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Information");
+            alert.setHeaderText("Waring Alert");
+            alert.setContentText( "Last Name  is Empty");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (((Optional<?>) result).isPresent() && result.get() == ButtonType.OK) {
+                txFldLName.setStyle("-fx-border-color: black;");
+            } else {
+                txFldLName.setStyle("-fx-border-color: black;");
+            }
+        }
+        else if (txFldGender.getText().isEmpty()) {
+            txFldGender.setStyle("-fx-border-color: red;");
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Information");
+            alert.setHeaderText("Waring Alert");
+            alert.setContentText( "Gender  is Empty");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (((Optional<?>) result).isPresent() && result.get() == ButtonType.OK) {
+                txFldGender.setStyle("-fx-border-color: black;");
+            } else {
+                txFldGender.setStyle("-fx-border-color: black;");
+            }
+        }
+        else if (txFldBranchID.getText().isEmpty()) {
+            txFldBranchID.setStyle("-fx-border-color: red;");
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Information");
+            alert.setHeaderText("Warning Alert");
+            alert.setContentText( "Branch id  is Empty");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (((Optional<?>) result).isPresent() && result.get() == ButtonType.OK) {
+                txFldBranchID.setStyle("-fx-border-color: black;");
+            } else {
+                txFldBranchID.setStyle("-fx-border-color: black;");
+            }
+        }
+        else if (txFldEmail.getText().isEmpty()) {
+            txFldEmail.setStyle("-fx-border-color: red;");
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Information");
+            alert.setHeaderText("Waring Alert");
+            alert.setContentText( "Email  is Empty");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (((Optional<?>) result).isPresent() && result.get() == ButtonType.OK) {
+                txFldEmail.setStyle("-fx-border-color: black;");
+            } else {
+                txFldEmail.setStyle("-fx-border-color: black;");
+            }
+        }
+        else if (txFldPass.getText().isEmpty()) {
+            txFldPass.setStyle("-fx-border-color: red;");
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Information");
+            alert.setHeaderText("Waring Alert");
+            alert.setContentText( "Password  is Empty");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (((Optional<?>) result).isPresent() && result.get() == ButtonType.OK) {
+                txFldPass.setStyle("-fx-border-color: black;");
+            } else {
+                txFldPass.setStyle("-fx-border-color: black;");
+            }
+        }
+        else if (txtFldConfirmPasswd.getText().isEmpty()) {
+            txtFldConfirmPasswd.setStyle("-fx-border-color: red;");
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Information");
+            alert.setHeaderText("Waring Alert");
+            alert.setContentText( " confirm password  is empty");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (((Optional<?>) result).isPresent() && result.get() == ButtonType.OK) {
+                txtFldConfirmPasswd.setStyle("-fx-border-color: black;");
+            } else {
+                txtFldConfirmPasswd.setStyle("-fx-border-color: black;");
+            }
+        }
+        else if (!txFldPass.getText().equals(txtFldConfirmPasswd.getText())) {
+            txtFldConfirmPasswd.setStyle("-fx-border-color: red;");
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Information");
+            alert.setHeaderText("Waring Alert");
+            alert.setContentText( "Please enter the same confirmation password");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                txtFldConfirmPasswd.setStyle("-fx-border-color: black;");
+            } else {
+                txtFldConfirmPasswd.setStyle("-fx-border-color: black;");
+            }
+        }
+        else
+            return true;
+        return false;
+    }
 
 }
