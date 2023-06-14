@@ -7,6 +7,7 @@ import java.util.Objects;
 
 public class Teller extends Employee{
     public static User user = new User() ;
+    public static Teller teller = new Teller() ;
   public  static  int id = 1;
     private final SimpleIntegerProperty BranchID;
 

@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -12,8 +13,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.util.Callback;
 
 import java.util.Objects;
+import java.util.Optional;
+
+import static com.example.bms.UserView.btnChangePass;
 
 
 public class TellerView extends EmployeeView{
@@ -27,13 +32,22 @@ public class TellerView extends EmployeeView{
     public static TableColumn<User, String> gender  = new TableColumn<>("Gender");
     public static TableColumn<User, String> username = new TableColumn<>("Username");
     public static TableColumn<User, String> password = new TableColumn<>("Password");
+    public static TableColumn<User, String> accountNumber = new TableColumn<>("Account Number");
+    public static TableColumn<User, Double> initialBalance = new TableColumn<>("Balance");
     public static TableColumn<User, String> phone = new TableColumn<>("Phone number");
     public static  TableColumn<User, String> email = new TableColumn<>("Email");
     public static TableColumn<User, String> registrationDate = new TableColumn<>("Registration Date");
     public static TableColumn<User, Image> photo = new TableColumn<>("Photo");
     public static Button btnDeposit = new Button("Deposit  ");
-    public static Button btnTransfer = new Button("Transfer  ");
-    public static Button btnWithDraw = new Button("WithDraw  ");
+    public static Button btnTransfer = new Button("Transfer");
+    public static Button btnWithDraw = new Button("WithDraw ");
+    public static Button btnDelete = new Button("DELETE");
+    public static Button btnUpdate = new Button("UPDATE");
+    public static Button btnBack = new Button("Back");
+    public static Button  btnSearchUser = new Button("Search");
+    public static Button btnCustomer = new Button("Customer Info");
+    public static Label emailS = new Label("email");
+    public static Label phoneNumber = new Label("Phone Number");
     public static final TextField txtFldAccNumber = new TextField() ;
     public static final Button btnBrowse = new Button("");
     public static final Button btnSearch = new Button("Search");
@@ -49,18 +63,26 @@ public class TellerView extends EmployeeView{
     public static Button btnSeeHistory = new Button(" See History "); //This button is to the history of ones teller
     public static Button btnCreateAcc  = new Button("Create user Acc"); // This button is to create user account
     public  static ImageView profile = new ImageView(new Image(Objects.requireNonNull(TellerView.class.getResourceAsStream("new.jpg"))));
+    public  static ImageView searchedProfile = new ImageView(new Image(Objects.requireNonNull(TellerView.class.getResourceAsStream("new.jpg"))));
     public static TellerView tellerView;
     public static Label name = new Label("Name : ");
+    public static Label searchedName = new Label("Name : ");
     public static Label Ugender = new Label("Gender : ");
+    public static Label searchedGender = new Label("Gender : ");
     public static Label accNumber = new Label("Account Number : ");
+    public static Label searchedAccNumber = new Label("Account Number : ");
     public static Label balance = new Label("Balance : ");
+    public static Label searchedBalance = new Label("Balance : ");
+    public static Label searchedEmail = new Label("Email : ");
+    public static Label searchedPhoneNumber = new Label("Phone number : ");
+
 
     public static void EmployeeView(){
         tellerView = new TellerView();
     }
     public static Parent tellerHome(String type) {
         ImageView manageUser = new ImageView(new Image(Objects.requireNonNull(TellerView.class.getResourceAsStream("Image/transfer-modified.png"))));
-        ImageView  history= new ImageView(new Image(Objects.requireNonNull(TellerView.class.getResourceAsStream("Image/transfer-modified.png"))));
+        ImageView  history= new ImageView(new Image(Objects.requireNonNull(TellerView.class.getResourceAsStream("Image/customer-modified.png"))));
         ImageView accountCreate = new ImageView(new Image(Objects.requireNonNull(TellerView.class.getResourceAsStream("Image/createacc-modified.png"))));
         manageUser.setFitHeight(110);
         manageUser.setFitWidth(110);
@@ -96,7 +118,7 @@ public class TellerView extends EmployeeView{
                 -fx-padding:12;
                 -fx-spacing:12;""");
         leftMenu.getStyleClass().add("left");
-        leftMenu.getChildren().addAll(manageUser, btnmanage, history, btnSeeHistory, accountCreate, btnCreateAcc);
+        leftMenu.getChildren().addAll(manageUser, btnmanage, history, btnCustomer, accountCreate, btnCreateAcc);
         allPage.getChildren().addAll(header,body);
         body.setMaxHeight(100);
         body.getStyleClass().add("header");
@@ -107,23 +129,35 @@ public class TellerView extends EmployeeView{
         main.getStyleClass().add("body");
         body.getChildren().addAll(leftMenu,main,rightMenu);
         rightMenu.setMinWidth(300);
-        ImageView imageView = new ImageView(new Image(Objects.requireNonNull(Teller.class.getResourceAsStream("new.jpg"))));
+        ImageView imageView = new ImageView(Teller.teller.getImage());
         imageView.setFitWidth(200);
         imageView.setFitHeight(230);
         imageView.setTranslateX(30);
-        rightMenu.getChildren().add(imageView);
+        name.setText("Name : "+ Teller.teller.getFirstName() + " " + Teller.teller.getSecondName() );
+        Ugender.setText("Gender : " +Teller.teller.getGender());
+        emailS.setText("Yours Email : " +Teller.teller.getEmail());
+        phoneNumber.setText("Phone number : " + Teller.teller.getPhone());
+        rightMenu.getChildren().addAll(imageView,name,Ugender,emailS,phoneNumber,btnChangePass);
+        rightMenu.setMinWidth(250);
         body.setSpacing(30);
-        if (type.equalsIgnoreCase("create"))
+        if (type.equalsIgnoreCase("create")) {
             main.getChildren().add(createUserAccView());
-        else if (type.equalsIgnoreCase("manage")) {
+            text.setText("Add new customer");
+        }else if (type.equalsIgnoreCase("manage")) {
             main.getChildren().addAll(manageUserAccount());
-            text.setText("Transfer fund page");
-        } else if (type.equalsIgnoreCase("")) {
-            main.getChildren().add(displayUserInfo("type"));
+            text.setText("Find customer ");
+        }else if (type.equalsIgnoreCase("user")) {
+            main.getChildren().addAll(loadUserTableView());
+            text.setText("Customer information");
+        } else if (type.contains("manage")) {
+            main.getChildren().add(searchedUserInfo(type));
         } else {
-            text.setText("Transaction history page");
+            text.setText("Searched customer information");
             main.getChildren().addAll(displayUserInfo(type));
+
         }
+        body.setMinWidth(1380);
+        body.setMaxWidth(1380);
         return allPage;
     }
     public static GridPane createUserAccView(){
@@ -164,7 +198,6 @@ public class TellerView extends EmployeeView{
     createUserAccountPage.add(conPassword, 3, 4);
     createUserAccountPage.add(txtFldConfirmPasswd, 4, 4);
     createUserAccountPage.add(create, 4, 6);
-    createUserAccountPage.add(back, 4, 16);
     createUserAccountPage.setHgap(23);
     createUserAccountPage.setVgap(7);
     createUserAccountPage.setAlignment(Pos.TOP_CENTER);
@@ -181,12 +214,122 @@ public static Parent manageUserAccount(){
         hBox.setAlignment(Pos.TOP_CENTER);
         return manageUserAccountContainer;
 }
+public static Parent loadUserTableView(){
+        Region region = new Region();
+        region.setMaxWidth(Double.MAX_VALUE);
+        GridPane.setHgrow(region, Priority.ALWAYS);
+        // Create an HBox to hold the label and the region
+        TellerView.tellerID.getStyleClass().add(className);
+        TellerView.firstName.getStyleClass().add(className);
+        TellerView.secondName.getStyleClass().add(className);
+        TellerView.gender.getStyleClass().add(className);
+        TellerView.username.getStyleClass().add(className);
+        TellerView.password.getStyleClass().add(className);
+        TellerView.email.getStyleClass().add(className);
+        TellerView.registrationDate.getStyleClass().add(className);
+        TellerView.branchID.getStyleClass().add(className);
+        TellerView.phone.getStyleClass().add(className);
+        TellerView.photo.getStyleClass().add(className);
+        TellerView.initialBalance.getStyleClass().add(className);
+        TellerView.accountNumber.getStyleClass().add(className);
+        TellerView.tellerID.setMinWidth(100);
+        TellerView.firstName.setMinWidth(100);
+        TellerView.secondName.setMinWidth(100);
+        TellerView.gender.setMinWidth(100);
+        TellerView.username.setMinWidth(100);
+        TellerView.password.setMinWidth(100);
+        TellerView.email.setMinWidth(100);
+        TellerView.registrationDate.setMinWidth(100);
+        TellerView.photo.setMinWidth(100);
+        TellerView.branchID.setMinWidth(100);
+        TellerView.tellerID.setCellValueFactory(new PropertyValueFactory<>("customerID"));
+        TellerView.firstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+        TellerView.secondName.setCellValueFactory(new PropertyValueFactory<>("secondName"));
+        TellerView.gender.setCellValueFactory(new PropertyValueFactory<>("gender"));
+        TellerView.username.setCellValueFactory(new PropertyValueFactory<>("username"));
+        TellerView.password.setCellValueFactory(new PropertyValueFactory<>("password"));
+        TellerView.initialBalance.setCellValueFactory(new PropertyValueFactory<>("balance"));
+        TellerView.accountNumber.setCellValueFactory(new PropertyValueFactory<>("accNumber"));
+        TellerView.email.setCellValueFactory(new PropertyValueFactory<>("email"));
+        TellerView.registrationDate.setCellValueFactory(new PropertyValueFactory<>("registrationDate"));
+        TellerView.phone.setCellValueFactory(new PropertyValueFactory<>("phone"));
+        TellerView.photo.setCellValueFactory(cellData -> cellData.getValue().imageProperty());
+        TellerView.photo.setCellFactory(new Callback<>() {
+            @Override
+            public TableCell<User, Image> call(TableColumn<User, Image> param) {
+                return new TableCell<>() {
+                    private final ImageView imageView = new ImageView();
+                    @Override
+                    protected void updateItem(Image item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item == null || empty) {
+                            setGraphic(null);
+                        } else {
+                            imageView.setImage(item);
+                            imageView.setFitHeight(50);
+                            imageView.setFitWidth(50);
+                            imageView.setTranslateX(20);
+                            setGraphic(imageView);
+                            imageView.setOnMouseClicked(e -> {
+                                ImageView clickedImage = (ImageView) e.getSource();
+                                TableCell<?, ?> clickedCell = (TableCell<?, ?>) clickedImage.getParent();
+                                TableRow<?> clickedRow = (TableRow<?>) clickedCell.getParent();
+                                // Get the index of the clicked row
+                                int rowIndex = clickedRow.getIndex();
+                                // Retrieve the corresponding object from the data source
+                                User objectToDelete = TellerView.tellerView.userTableView.getItems().get(rowIndex);
+                                objectToDelete = userTableView.getSelectionModel().getSelectedItem();
+                                // Create and show the confirmation alert
+                                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                                alert.setTitle("Confirmation");
+                                alert.setHeaderText("Delete Confirmation");
+                                alert.setContentText("Are you sure you want to delete this item?");
+                                // Customize the buttons
+                                ButtonType deleteButton = new ButtonType("Delete", ButtonBar.ButtonData.OK_DONE);
+                                ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+                                alert.getButtonTypes().setAll(deleteButton, cancelButton);
+                                // Show the alert and handle the result
+                                Optional<ButtonType> result = alert.showAndWait();
+                                if (result.isPresent() && result.get() == deleteButton) {
+                                    // User clicked "Delete"
+                                    getTableView().getItems().remove(objectToDelete);
+                                }  // User clicked "Cancel" or closed the alert
+                                // Handle any other actions or do nothing
+
+                            });
+                        }
+                    }
+                };
+            }
+        });
+        userTableView.getColumns().addAll(TellerView.tellerID,TellerView.firstName,TellerView.secondName,TellerView.gender,TellerView.username,TellerView.password,TellerView.phone, TellerView.email,initialBalance,accountNumber,TellerView.registrationDate,TellerView.photo);
+        TellerView.phone.setPrefWidth(AdminView.UPdate.resize(phone.getText()));
+        TellerView.firstName.setPrefWidth(AdminView.UPdate.resize(firstName.getText()));
+        TellerView.secondName.setPrefWidth(AdminView.UPdate.resize(secondName.getText()));
+        TellerView.gender.setPrefWidth(AdminView.UPdate.resize(gender.getText()));
+        TellerView.username.setPrefWidth(AdminView.UPdate.resize(phone.getText()));
+        TellerView.password.setPrefWidth(AdminView.UPdate.resize(phone.getText()));
+        TellerView.email.setPrefWidth(AdminView.UPdate.resize("email.getText()"));
+        TellerView.registrationDate.setPrefWidth(AdminView.UPdate.resize("registration"));
+        StackPane stackPane = new StackPane();
+        stackPane.getChildren().add(userTableView);
+        VBox centeral = new VBox();
+        centeral.setSpacing(10);
+        HBox searchContainer = new HBox();
+        searchContainer.setAlignment(Pos.TOP_RIGHT);
+        Label enterAcc = new Label("Enter account number");
+        searchContainer.getChildren().addAll(enterAcc,txtFldAccNumber,btnSearchUser);
+        searchContainer.setSpacing(15);
+        centeral.getChildren().addAll(searchContainer,stackPane);
+        centeral.setMaxWidth(800);
+        return centeral;
+    }
 public static Parent displayUserInfo(String type){
         VBox leftContent = new VBox();
-        profile.setFitWidth(80);
-        profile.setFitHeight(100);
-        profile.setTranslateX(20);
-        leftContent.getChildren().addAll(profile,name,Ugender,accNumber,balance);
+        searchedProfile.setFitWidth(80);
+        searchedProfile.setFitHeight(100);
+        searchedProfile.setTranslateX(20);
+        leftContent.getChildren().addAll(searchedProfile,searchedName,searchedGender,searchedAccNumber,searchedBalance);
         VBox rightMenu = new VBox();
         btnWithDraw.setMinWidth(50);
         btnTransfer.setMinWidth(50);
@@ -244,6 +387,33 @@ public static Parent withdrawView(){
         transferContainer.setHgap(10);
         return transferContainer;
     }
-
+    public static Parent searchedUserInfo(String type){
+        VBox leftContent = new VBox();
+        searchedProfile.setFitWidth(80);
+        searchedProfile.setFitHeight(100);
+        searchedProfile.setTranslateX(20);
+        leftContent.getChildren().addAll(searchedProfile,searchedName,searchedGender,searchedAccNumber,searchedBalance,searchedEmail,searchedPhoneNumber);
+        VBox rightMenu = new VBox();
+        btnDelete.setMinWidth(50);
+        btnUpdate.setMinWidth(50);
+        btnBack.setMinWidth(50);
+        leftContent.setSpacing(30);
+        rightMenu.setSpacing(5);
+        rightMenu.getChildren().addAll(btnDelete,btnUpdate,btnBack);
+        HBox hBox = new HBox();
+        StackPane centerContent  =new StackPane();
+        centerContent.prefWidthProperty().bind(BMS.scene.widthProperty().multiply(0.3));
+        hBox.setSpacing(30);
+        rightMenu.setAlignment(Pos.TOP_RIGHT);
+        leftContent.setMinWidth(600);
+        hBox.getChildren().addAll(leftContent,rightMenu);
+        if (type.contains("DELETE"));
+//            centerContent.getChildren().add(deleteUserView());
+        else if (type.contains("UPDATE"))
+            centerContent.getChildren().add(transferView());
+        else if (type.contains("NOTIFY"))
+            centerContent.getChildren().add(withdrawView());
+        return hBox;
+    }
 
 }

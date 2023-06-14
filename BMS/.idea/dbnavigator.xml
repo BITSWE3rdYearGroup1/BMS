@@ -87,6 +87,60 @@ create table tbl_transactions(
 	teller_id int
 )
 use bms
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-05-28',2,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-05-29',4,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-06-01',4,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-06-02',4,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-06-03',4,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-06-04',4,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-06-05',4,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-06-07',4,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-06-08',4,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-06-08',4,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-06-12',4,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-06-14',4,2);
+insert into  tbl_transaction (transaction_type,amount,destination,transaction_date,customer_id,teller_id) values 
+('Deposit',49904,1001,'2023-05-28',4,2);
+insert into  tbl_transaction (transaction_type,amount,destination,transaction_date,customer_id,teller_id) values 
+('Deposit',49904,1001,'2023-05-29',4,2);
+insert into  tbl_transaction (transaction_type,amount,destination,transaction_date,customer_id,teller_id) values 
+('Deposit',49904,1001,'2023-06-01',4,2);
+insert into  tbl_transaction (transaction_type,amount,destination,transaction_date,customer_id,teller_id) values 
+('Deposit',49904,1001,'2023-06-02',4,2);
+insert into  tbl_transaction (transaction_type,amount,destination,transaction_date,customer_id,teller_id) values 
+('Deposit',49904,1001,'2023-06-03',4,2);
+insert into  tbl_transaction (transaction_type,amount,destination,transaction_date,customer_id,teller_id) values 
+('Deposit',49904,1001,'2023-06-04',4,2);
+insert into  tbl_transaction (transaction_type,amount,destination,transaction_date,customer_id,teller_id) values 
+('Deposit',49904,1001,'2023-06-05',4,2);
+insert into  tbl_transaction (transaction_type,amount,destination,transaction_date,customer_id,teller_id) values 
+('Deposit',49904,1001,'2023-06-07',4,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-05-28',2,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-05-28',2,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-05-28',2,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-05-28',2,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-05-28',2,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-05-28',2,2);
+use bms
+select  * from tbl_transaction
 CREATE TABLE tbl_transactions (
     transaction_id INT AUTO_INCREMENT PRIMARY KEY,
     transaction_type VARCHAR(30),
@@ -98,7 +152,7 @@ CREATE TABLE tbl_transactions (
     teller_id INT,
     CONSTRAINT tbl_transaction_FK1 FOREIGN KEY (customer_id) REFERENCES tbl_customer(customer_id)
 );
-CREATE PROCEDURE spTransferFund(
+CREATE   PROCEDURE spTransferFund(
     IN amount DECIMAL(10, 2),
     IN destination VARCHAR(100),
     IN teller INT,
@@ -106,10 +160,11 @@ CREATE PROCEDURE spTransferFund(
     OUT make BOOL
 )
 BEGIN
-    DECLARE initial DECIMAL(10, 2) DEFAULT 0.0 ;
+    DECLARE initial double DEFAULT 0.0 ;
     DECLARE acc VARCHAR(15) DEFAULT 0;
     DECLARE id INT DEFAULT 0;
     SELECT balance INTO initial FROM tbl_customer WHERE customer_id = customer;
+    if initial > amount then
         UPDATE tbl_customer SET balance = balance - amount WHERE customer_id = customer;
         UPDATE tbl_customer SET balance = balance + amount WHERE account_number = destination;
         SELECT account_number INTO acc FROM tbl_customer WHERE customer_id = customer;
@@ -171,7 +226,26 @@ SHOW PROCEDURE STATUS;
 
 
 ALTER TABLE tbl_customer MODIFY phone varchar(15);
-select  (CURDATE()) as d]]></console>
+select  (CURDATE()) as d
+create  database todo
+CREATE TABLE users (
+  id int(3) NOT NULL AUTO_INCREMENT,
+  first_name varchar(20) DEFAULT NULL,
+  last_name varchar(20) DEFAULT NULL,
+  username varchar(250) DEFAULT NULL,
+  password varchar(20) DEFAULT NULL,
+  PRIMARY KEY (id)
+); ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE todos (
+  id bigint(20) NOT NULL AUTO_INCREMENT,
+  description varchar(255) DEFAULT NULL,
+  is_done bit(1) NOT NULL,
+  target_date datetime(6) DEFAULT NULL,
+  username varchar(255) DEFAULT NULL,
+  title varchar(255) DEFAULT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;]]></console>
     </connection>
     <connection id="8f18098a-9e63-4303-aec0-71221009143b">
       <console name="Connection" type="STANDARD" schema="bms" session="Main"><![CDATA[--create database BMS
@@ -254,6 +328,244 @@ create table tbl_transaction(
     <connection id="27f2113c-922c-4c28-aaae-59beb65213e8">
       <console name="Connection 2" type="STANDARD" schema="mysql" session="Main" />
     </connection>
+    <connection id="9f1eb3bc-ca11-4a51-bd06-8790fc283281">
+      <console name="Connection 3" type="STANDARD" schema="bms" session="Main"><![CDATA[CREATE DATABASE BMS
+USE BMS
+CREATE TABLE tbl_branch (
+	branch_id INT  PRIMARY KEY AUTO_INCREMENT,
+	branch_Name  VARCHAR(30),
+	region VARCHAR(30) DEFAULT 'Amhara',
+	zone VARCHAR(30) DEFAULT 'Bahir Dar',
+	woreda VARCHAR(30),
+	sub_city VARCHAR(30)
+)
+select balance from tbl_customer
+-- create admin table
+CREATE TABLE tbl_admin(
+	admin_id INT PRIMARY KEY AUTO_INCREMENT,
+	first_name varchar(20),
+	last_name varchar(20),
+	gender varchar(12),
+	user_name varchar(15),
+	password varchar(15),
+	phone varchar(15),
+	email varchar(30),
+	registeration_date date
+)
+drop table tbl_admin
+-- create teller table
+create table tbl_teller (
+	teller_id int  primary key AUTO_INCREMENT,
+	first_name varchar(20),
+	last_name varchar(20),
+	gender VARCHAR(23),
+	user_name varchar(15),
+	password varchar(15),
+	phone varchar(21),
+	email varchar(30),
+	registration_date date,
+	branch_ID int ,
+	photo longblob,
+	constraint tbl_tellerFK1 foreign key(branch_ID) references tbl_branch(branch_ID)
+	)
+	drop table tbl_customer
+-- create customer table
+create table tbl_customer (
+customer_id int  primary key AUTO_INCREMENT,
+first_name varchar(20),
+last_name varchar(20),
+gender VARCHAR(23),
+user_name varchar(15),
+password varchar(15),
+account_number varchar(15),
+balance float,
+phone varchar(16),
+email varchar(30),
+photo longblob,
+registration_date date,
+teller_id int,
+constraint tbl_customerFK1 foreign key(teller_id) references tbl_teller(teller_id)
+)
+ALTER TABLE tbl_transaction
+DROP CONSTRAINT tbl_transaction_FK1
+use bms
+drop table  tbl_transaction
+drop table tbl_customer
+select  * from tbl_customer
+--create transaction table
+drop table  tbl_transaction
+create  table tbl_transaction(
+	transaction_id INT AUTO_INCREMENT PRIMARY KEY,
+	transaction_type varchar(30),
+	account_number varchar(15) null,
+	amount float,
+	destination varchar(15) null ,
+	transaction_date date,
+	customer_id int ,
+	constraint tbl_transaction_FK1 foreign key(customer_id) references tbl_customer(customer_id),
+	teller_id int
+)
+use bms
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-05-28',2,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-05-29',4,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-06-01',4,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-06-02',4,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-06-03',4,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-06-04',4,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-06-05',4,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-06-07',4,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-06-08',4,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-06-08',4,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-06-12',4,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-06-14',4,2);
+insert into  tbl_transaction (transaction_type,amount,destination,transaction_date,customer_id,teller_id) values 
+('Deposit',49904,1001,'2023-05-28',4,2);
+insert into  tbl_transaction (transaction_type,amount,destination,transaction_date,customer_id,teller_id) values 
+('Deposit',49904,1001,'2023-05-29',4,2);
+insert into  tbl_transaction (transaction_type,amount,destination,transaction_date,customer_id,teller_id) values 
+('Deposit',49904,1001,'2023-06-01',4,2);
+insert into  tbl_transaction (transaction_type,amount,destination,transaction_date,customer_id,teller_id) values 
+('Deposit',49904,1001,'2023-06-02',4,2);
+insert into  tbl_transaction (transaction_type,amount,destination,transaction_date,customer_id,teller_id) values 
+('Deposit',49904,1001,'2023-06-03',4,2);
+insert into  tbl_transaction (transaction_type,amount,destination,transaction_date,customer_id,teller_id) values 
+('Deposit',49904,1001,'2023-06-04',4,2);
+insert into  tbl_transaction (transaction_type,amount,destination,transaction_date,customer_id,teller_id) values 
+('Deposit',49904,1001,'2023-06-05',4,2);
+insert into  tbl_transaction (transaction_type,amount,destination,transaction_date,customer_id,teller_id) values 
+('Deposit',49904,1001,'2023-06-07',4,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-05-28',2,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-05-28',2,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-05-28',2,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-05-28',2,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-05-28',2,2);
+insert into  tbl_transaction (transaction_type,account_number,amount,destination,transaction_date,customer_id,teller_id) values 
+('Transfer',1001,49904,1004,'2023-05-28',2,2);
+use bms
+select  * from tbl_transaction
+CREATE TABLE tbl_transactions (
+    transaction_id INT AUTO_INCREMENT PRIMARY KEY,
+    transaction_type VARCHAR(30),
+    account_number VARCHAR(15),
+    amount FLOAT,
+    destination VARCHAR(15) NULL,
+    transaction_date DATE,
+    customer_id INT,
+    teller_id INT,
+    CONSTRAINT tbl_transaction_FK1 FOREIGN KEY (customer_id) REFERENCES tbl_customer(customer_id)
+);
+CREATE PROCEDURE spTransferFund(
+    IN amount DECIMAL(10, 2),
+    IN destination VARCHAR(100),
+    IN teller INT,
+    IN customer INT,
+    OUT make BOOL
+)
+BEGIN
+    DECLARE initial DECIMAL(10, 2) DEFAULT 0.0;
+    DECLARE acc VARCHAR(15) DEFAULT '';
+    DECLARE id INT DEFAULT 0;
+    SELECT balance INTO initial FROM tbl_customer WHERE customer_id = customer;
+    IF initial > amount THEN
+        UPDATE tbl_customer SET balance = balance - amount WHERE customer_id = customer;
+        UPDATE tbl_customer SET balance = balance + amount WHERE account_number = destination;
+        SELECT account_number INTO acc FROM tbl_customer WHERE customer_id = customer;
+        SELECT customer_id INTO id FROM tbl_customer WHERE account_number = destination;
+        INSERT INTO tbl_transaction (transaction_type, account_number, amount, destination, transaction_date, customer_id, teller_id)
+        VALUES ('Transfer', acc, amount, destination, DATE_FORMAT(CURRENT_DATE, '%Y-%m-%d'), customer, teller);
+        INSERT INTO tbl_transaction (transaction_type, account_number, amount, destination, transaction_date, customer_id, teller_id)
+        VALUES ('Transfer', acc, amount, destination, DATE_FORMAT(CURRENT_DATE, '%Y-%m-%d'), id, teller);
+        SET make = true;
+    ELSE
+        SET make = false;
+    END IF;
+END
+
+
+CREATE PROCEDURE spDeposit(
+    IN amount DECIMAL(10, 2),
+    IN teller INT,
+    IN customer INT,
+    OUT make BOOL
+)
+BEGIN
+    DECLARE id INT DEFAULT 0;
+    DECLARE acc VARCHAR(23) DEFAULT 0;
+        UPDATE tbl_customer SET balance = balance + amount WHERE customer_id = customer;
+        SELECT account_number INTO acc FROM tbl_customer WHERE customer_id = customer;
+        INSERT INTO tbl_transaction (transaction_type, amount, destination, transaction_date, customer_id, teller_id)
+        VALUES ('Deposit', amount, acc, DATE_FORMAT(CURDATE(), '%Y-%m-%d'), customer, teller);
+        SET make = true;
+END
+
+
+CREATE PROCEDURE spWithDraw(
+    IN amount DECIMAL(10, 2),
+    IN teller INT,
+    IN customer INT,
+    OUT make BOOL
+)
+BEGIN
+    DECLARE acc VARCHAR(23) DEFAULT '9';
+         UPDATE tbl_customer SET balance = balance - amount WHERE customer_id = customer;
+        SELECT account_number INTO acc FROM tbl_customer WHERE customer_id = customer;
+        INSERT INTO tbl_transaction (transaction_type,account_number, amount, transaction_date, customer_id, teller_id)
+        VALUES ('Withdraw',acc, amount, DATE_FORMAT(CURDATE(), '%Y-%m-%d'), customer, teller);
+        SET make = true;
+END
+
+CREATE PROCEDURE spDeleteTeller(
+IN id int
+)
+BEGIN
+    UPDATE tbl_customer SET teller_id = 0 WHERE teller_id = id;
+    UPDATE tbl_transaction SET teller_id = 0 WHERE teller_id = id;
+    DELETE FROM tbl_customer WHERE customer_id = id;
+END
+
+
+SHOW PROCEDURE STATUS;
+
+
+ALTER TABLE tbl_customer MODIFY phone varchar(15);
+select  (CURDATE()) as d
+create  database todo
+CREATE TABLE users (
+  id int(3) NOT NULL AUTO_INCREMENT,
+  first_name varchar(20) DEFAULT NULL,
+  last_name varchar(20) DEFAULT NULL,
+  username varchar(250) DEFAULT NULL,
+  password varchar(20) DEFAULT NULL,
+  PRIMARY KEY (id)
+); ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE todos (
+  id bigint(20) NOT NULL AUTO_INCREMENT,
+  description varchar(255) DEFAULT NULL,
+  is_done bit(1) NOT NULL,
+  target_date datetime(6) DEFAULT NULL,
+  username varchar(255) DEFAULT NULL,
+  title varchar(255) DEFAULT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;]]></console>
+    </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
     <last-used-providers />
@@ -262,6 +574,11 @@ create table tbl_transaction(
     <open-files />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-actions connection-id="9f1eb3bc-ca11-4a51-bd06-8790fc283281" dataset="bms.tbl_transaction" active-filter-id="0132ee38-25a7-44ba-81b4-e50ae2f6cb86">
+      <filter id="0132ee38-25a7-44ba-81b4-e50ae2f6cb86" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="transaction_id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
     <filter-actions connection-id="0a93eba9-476e-4745-a919-ad03edbb3d6c" dataset="bmss.tbl_customer" active-filter-id="">
       <filter id="40b8a65c-677a-4e22-8736-e8431e457ad5" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
         <condition column="customer_id" operator="=" value="" active="true" />
@@ -584,6 +901,92 @@ create table tbl_transaction(
           <restore-workspace-deep value="false" />
           <environment-type value="default" />
           <connectivity-timeout value="10" />
+          <idle-time-to-disconnect value="30" />
+          <idle-time-to-disconnect-pool value="5" />
+          <credential-expiry-time value="10" />
+          <max-connection-pool-size value="7" />
+          <alternative-statement-delimiter value="" />
+        </details>
+        <object-filters hide-empty-schemas="false" hide-pseudo-columns="false">
+          <object-type-filter>
+            <object-type name="SCHEMA" enabled="true" />
+            <object-type name="USER" enabled="true" />
+            <object-type name="ROLE" enabled="true" />
+            <object-type name="PRIVILEGE" enabled="true" />
+            <object-type name="CHARSET" enabled="true" />
+            <object-type name="TABLE" enabled="true" />
+            <object-type name="VIEW" enabled="true" />
+            <object-type name="MATERIALIZED_VIEW" enabled="true" />
+            <object-type name="NESTED_TABLE" enabled="true" />
+            <object-type name="COLUMN" enabled="true" />
+            <object-type name="INDEX" enabled="true" />
+            <object-type name="CONSTRAINT" enabled="true" />
+            <object-type name="DATASET_TRIGGER" enabled="true" />
+            <object-type name="DATABASE_TRIGGER" enabled="true" />
+            <object-type name="SYNONYM" enabled="true" />
+            <object-type name="SEQUENCE" enabled="true" />
+            <object-type name="PROCEDURE" enabled="true" />
+            <object-type name="FUNCTION" enabled="true" />
+            <object-type name="PACKAGE" enabled="true" />
+            <object-type name="TYPE" enabled="true" />
+            <object-type name="TYPE_ATTRIBUTE" enabled="true" />
+            <object-type name="ARGUMENT" enabled="true" />
+            <object-type name="DIMENSION" enabled="true" />
+            <object-type name="CLUSTER" enabled="true" />
+            <object-type name="DBLINK" enabled="true" />
+          </object-type-filter>
+          <object-name-filters />
+        </object-filters>
+      </connection>
+      <connection id="9f1eb3bc-ca11-4a51-bd06-8790fc283281" active="true" signed="true">
+        <database>
+          <name value="Connection 3" />
+          <description value="" />
+          <database-type value="MYSQL" />
+          <config-type value="BASIC" />
+          <database-version value="5.5" />
+          <driver-source value="BUNDLED" />
+          <driver-library value="" />
+          <driver value="" />
+          <url-type value="DATABASE" />
+          <host value="localhost" />
+          <port value="3306" />
+          <database value="mysql" />
+          <tns-folder value="" />
+          <tns-profile value="" />
+          <type value="USER_PASSWORD" />
+          <user value="Sutuale" />
+          <deprecated-pwd value="MTIz" />
+        </database>
+        <properties>
+          <auto-commit value="false" />
+        </properties>
+        <ssh-settings>
+          <active value="false" />
+          <proxy-host value="" />
+          <proxy-port value="22" />
+          <proxy-user value="" />
+          <deprecated-proxy-pwd value="" />
+          <auth-type value="PASSWORD" />
+          <key-file value="" />
+          <key-passphrase value="" />
+        </ssh-settings>
+        <ssl-settings>
+          <active value="false" />
+          <certificate-authority-file value="" />
+          <client-certificate-file value="" />
+          <client-key-file value="" />
+        </ssl-settings>
+        <details>
+          <charset value="UTF-8" />
+          <session-management value="true" />
+          <ddl-file-binding value="true" />
+          <database-logging value="true" />
+          <connect-automatically value="true" />
+          <restore-workspace value="true" />
+          <restore-workspace-deep value="false" />
+          <environment-type value="default" />
+          <connectivity-timeout value="30" />
           <idle-time-to-disconnect value="30" />
           <idle-time-to-disconnect-pool value="5" />
           <credential-expiry-time value="10" />

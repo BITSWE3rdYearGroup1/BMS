@@ -26,7 +26,6 @@ public class AdminView  extends EmployeeView{
     public static  ImageView imgBack  = new ImageView(new Image(Objects.requireNonNull(AdminView.class.getResourceAsStream("Image/backIcon.png"))));
 
     public static Button teller = new Button("Teller Info"); //This button is to enter to teller info page
-    public static Button customer = new Button("Customer Info"); //this button is to enter customer page
     public static  Button btnAccount = new Button("Create Account"); //this button is to enter customer page
     public static Label recPhoto;
     public static Label name = new Label("name");
@@ -34,17 +33,16 @@ public class AdminView  extends EmployeeView{
     public static Label accNumber = new Label("Account number");
     public static Label balance = new Label("Balance");
     public static Label emailS = new Label("email");
-    public static Label branchName = new Label("email");
+    public static Label branchName = new Label("Branch Name");
     public  static ImageView profile = new ImageView(new Image(Objects.requireNonNull(TellerView.class.getResourceAsStream("new.jpg"))));
     public static Label phoneNumber = new Label("Balance");
     public static Button btnDelete = new Button("DELETE");
     public static Button btnUpdate = new Button("UPDATE");
     public static Button btnNotify = new Button("NOTIFY");
-    public static Button  btnSearchUser = new Button("Search");
     public static Button  btnSearchTeller = new Button("Search");
     public static Button  btnCreateAcc = new Button("Register");
-    public static TextField txtFldAccNumber = new TextField();
     public static TextField txtFldTeller = new TextField();
+    static ImageView image = new ImageView(new Image(Objects.requireNonNull(Teller.class.getResourceAsStream("Image/upload_2_30x20.png"))));
     public AdminView(){
         adminView =  new EmployeeView();
     }
@@ -52,17 +50,14 @@ public class AdminView  extends EmployeeView{
     {
         VBox leftMenu = new VBox();
         ImageView tellerImage = new ImageView(new Image(Objects.requireNonNull(AdminView.class.getResourceAsStream("Image/teller-modified.png")))); // This is to teller image
-        ImageView customerImage = new ImageView(new Image(Objects.requireNonNull(AdminView.class.getResourceAsStream("Image/customer-modified.png"))));
         ImageView accountImage = new ImageView(new Image(Objects.requireNonNull(AdminView.class.getResourceAsStream("Image/account-modified.png"))));
         tellerImage.setFitHeight(110);
         tellerImage.setFitWidth(110);
         accountImage.setFitHeight(110);
         accountImage.setFitWidth(110);
-        customerImage.setFitHeight(110);
-        customerImage.setFitWidth(110);
-        leftMenu.getChildren().addAll(tellerImage,teller,customerImage,customer,accountImage,btnAccount);
+        leftMenu.getChildren().addAll(tellerImage,teller,accountImage,btnAccount);
         leftMenu.getStyleClass().add("left");
-        Text text = new Text("create Account Page");
+        Text text = new Text("create Account");
         text.setFill(Color.color(1,1,1));
         text.setFont(Font.font("verdana", FontWeight.BOLD,33));
         StackPane header = new StackPane();
@@ -91,27 +86,19 @@ public class AdminView  extends EmployeeView{
         main.setMaxHeight(500);
         body.getChildren().addAll(leftMenu,main);
         if (type.equalsIgnoreCase("create")) {
-            text.setText("Create account Page");
+            text.setText("Create account ");
             body.setSpacing(30);
             main.getChildren().add(createAccView());
         }
-        else if (type.equalsIgnoreCase("teller")) {
+        else if (type.equalsIgnoreCase("tellers")) {
             body.setSpacing(0);
-            text.setText("Teller information Page");
+            text.setText("Teller information");
             main.getChildren().add(loadTableView());
-        } else if (type.contains("teller")) {
-            main.getChildren().add(searchedTellerInfo(type));
-            body.setSpacing(0);
-            text.setText("Searched Customer information");
-        } else if (type.equalsIgnoreCase("user")) {
-            main.getChildren().add(loadUserTableView());
-            body.setSpacing(0);
-            text.setText("Customer information Page");
         }
         else {
-            main.getChildren().add(searchedUserInfo(type));
+            main.getChildren().add(searchedTellerInfo(type));
             body.setSpacing(0);
-            text.setText("Searched Customer information");
+            text.setText("Searched Teller information");
 
         }
         VBox rightMenu = new VBox();
@@ -124,6 +111,7 @@ public class AdminView  extends EmployeeView{
         rightMenu.getChildren().add(imageView);
         body.getChildren().add(rightMenu);
         body.setSpacing(30);
+        allPage.setPrefHeight(600);
         return allPage;
 
     }
@@ -138,17 +126,15 @@ public class AdminView  extends EmployeeView{
         Label lblConfirm = new Label("Confirm:");
         Label lblPhone = new Label("Phone:");
         Label lblPhoto = new Label("Photo:");
-        ImageView image = new ImageView(new Image(Objects.requireNonNull(Teller.class.getResourceAsStream("Image/upload_2_30x20.png"))));
         btnBrowse.setGraphic(image);// made the upload image inside the brose button
         Label lblEmail = new Label("Email");
-        Label lblBranch = new Label("Branch ID");
+        Label lblBranch = new Label("Teller ID");
         recPhoto = new Label();
         recPhoto.setMinSize(50,50);
         gridPane.setStyle("-fx-background-color: #212F3F;");
         gridPane.setPadding(new Insets(10,10,10,10));
         gridPane.setVgap(20);
         gridPane.setHgap(20);
-        gridPane.add(imgBack, 0,0);
         gridPane.add(lblCreateTAcc, 1,0, 3,1);
         gridPane.add(lblFName, 0, 1);
         gridPane.add(txFldFName, 1, 1);
@@ -158,20 +144,21 @@ public class AdminView  extends EmployeeView{
         gridPane.add(btnBrowse,3,4);
         gridPane.add(lblGender,0,3);
         gridPane.add(txFldGender,1,3);
-        gridPane.add(lblEmail,2,1);
-        gridPane.add(txFldEmail,3,1);
-        gridPane.add(lblUname,0,4);
-        gridPane.add(txFldUName,1,4);
-        gridPane.add(lblBranch,2,2);
-        gridPane.add(txFldBranchID,3,2);
-        gridPane.add(lblPass,0,5);
-        gridPane.add(txFldPass,1,5);
-        gridPane.add(lblConfirm,0,6);
-        gridPane.add(txtFldConfirmPasswd,1,6);
-        gridPane.add(lblPhone,2,3);
-        gridPane.add(txFldPhone,3,3);
+        gridPane.add( lblUname,2,1);
+        gridPane.add(txFldUName,3,1);
+        gridPane.add(lblEmail,0,4);
+        gridPane.add( txFldEmail,1,4);
+        gridPane.add(lblPass,2,2);
+        gridPane.add(txFldPass ,3,2);
+        gridPane.add( lblBranch,0,5);
+        gridPane.add(txFldBranchID,1,5);
+        gridPane.add(lblPhone,0,6);
+        gridPane.add(txFldPhone,1,6);
+        gridPane.add(lblConfirm ,2,3);
+        gridPane.add(txtFldConfirmPasswd ,3,3);
         gridPane.add(AdminView.btnCreateAcc,3,5);
         gridPane.setStyle("-fx-background-color:#0a3260");
+        gridPane.setMinHeight(500);
         return gridPane;
     }
     public static Parent loadTableView(){
@@ -252,10 +239,11 @@ public class AdminView  extends EmployeeView{
         centeral.setSpacing(10);
         HBox searchContainer = new HBox();
         searchContainer.setAlignment(Pos.TOP_RIGHT);
-        Label enterAcc = new Label("Enter first name");
+        Label enterAcc = new Label("Enter Teller ID ");
         searchContainer.getChildren().addAll(enterAcc,AdminView.txtFldTeller,btnSearchTeller);
         searchContainer.setSpacing(15);
         centeral.getChildren().addAll(searchContainer,stackPane);
+        centeral.setMinHeight(500);
         return centeral;
     }
     static class UPdate {
@@ -266,139 +254,8 @@ public class AdminView  extends EmployeeView{
         }
 
     }
-    public static Parent loadUserTableView(){
-        Region region = new Region();
-        region.setMaxWidth(Double.MAX_VALUE);
-        GridPane.setHgrow(region, Priority.ALWAYS);
-        // Create an HBox to hold the label and the region
-        TellerView.tellerID.getStyleClass().add(className);
-        TellerView.firstName.getStyleClass().add(className);
-        TellerView.secondName.getStyleClass().add(className);
-        TellerView.gender.getStyleClass().add(className);
-        TellerView.username.getStyleClass().add(className);
-        TellerView.password.getStyleClass().add(className);
-        TellerView.email.getStyleClass().add(className);
-        TellerView.registrationDate.getStyleClass().add(className);
-        TellerView.branchID.getStyleClass().add(className);
-        TellerView.phone.getStyleClass().add(className);
-        TellerView.photo.getStyleClass().add(className);
-        TellerView.tellerID.setMinWidth(100);
-        TellerView.firstName.setMinWidth(100);
-        TellerView.secondName.setMinWidth(100);
-        TellerView.gender.setMinWidth(100);
-        TellerView.username.setMinWidth(100);
-        TellerView.password.setMinWidth(100);
-        TellerView.email.setMinWidth(100);
-        TellerView.registrationDate.setMinWidth(100);
-        TellerView.photo.setMinWidth(100);
-        TellerView.branchID.setMinWidth(100);
-        TellerView.tellerID.setCellValueFactory(new PropertyValueFactory<>("customerID"));
-        TellerView.firstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
-        TellerView.secondName.setCellValueFactory(new PropertyValueFactory<>("secondName"));
-        TellerView.gender.setCellValueFactory(new PropertyValueFactory<>("gender"));
-        TellerView.username.setCellValueFactory(new PropertyValueFactory<>("username"));
-        TellerView.password.setCellValueFactory(new PropertyValueFactory<>("password"));
-        TellerView.email.setCellValueFactory(new PropertyValueFactory<>("email"));
-        TellerView.registrationDate.setCellValueFactory(new PropertyValueFactory<>("registrationDate"));
-        TellerView.phone.setCellValueFactory(new PropertyValueFactory<>("phone"));
-        TellerView.photo.setCellValueFactory(cellData -> cellData.getValue().imageProperty());
-        TellerView.photo.setCellFactory(new Callback<>() {
-            @Override
-            public TableCell<User, Image> call(TableColumn<User, Image> param) {
-                return new TableCell<>() {
-                    private final ImageView imageView = new ImageView();
-                    @Override
-                    protected void updateItem(Image item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (item == null || empty) {
-                            setGraphic(null);
-                        } else {
-                            imageView.setImage(item);
-                            imageView.setFitHeight(50);
-                            imageView.setFitWidth(50);
-                            imageView.setTranslateX(20);
-                            setGraphic(imageView);
-                            imageView.setOnMouseClicked(e -> {
-                                ImageView clickedImage = (ImageView) e.getSource();
-                                TableCell<?, ?> clickedCell = (TableCell<?, ?>) clickedImage.getParent();
-                                TableRow<?> clickedRow = (TableRow<?>) clickedCell.getParent();
-                                // Get the index of the clicked row
-                                int rowIndex = clickedRow.getIndex();
-                                // Retrieve the corresponding object from the data source
-                                User objectToDelete = TellerView.tellerView.userTableView.getItems().get(rowIndex);
-                                objectToDelete = userTableView.getSelectionModel().getSelectedItem();
-                                // Create and show the confirmation alert
-                                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                                alert.setTitle("Confirmation");
-                                alert.setHeaderText("Delete Confirmation");
-                                alert.setContentText("Are you sure you want to delete this item?");
-                                // Customize the buttons
-                                ButtonType deleteButton = new ButtonType("Delete", ButtonBar.ButtonData.OK_DONE);
-                                ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-                                alert.getButtonTypes().setAll(deleteButton, cancelButton);
-                                // Show the alert and handle the result
-                                Optional<ButtonType> result = alert.showAndWait();
-                                if (result.isPresent() && result.get() == deleteButton) {
-                                    // User clicked "Delete"
-                                    getTableView().getItems().remove(objectToDelete);
-                                }  // User clicked "Cancel" or closed the alert
-                                // Handle any other actions or do nothing
 
-                            });
-                        }
-                    }
-                };
-            }
-        });
-        userTableView.getColumns().addAll(TellerView.tellerID,TellerView.firstName,TellerView.secondName,TellerView.gender,TellerView.username,TellerView.password,TellerView.phone, TellerView.email,TellerView.registrationDate,TellerView.photo);
-        TellerView.phone.setPrefWidth(AdminView.UPdate.resize(phone.getText()));
-        TellerView.firstName.setPrefWidth(AdminView.UPdate.resize(firstName.getText()));
-        TellerView.secondName.setPrefWidth(AdminView.UPdate.resize(secondName.getText()));
-        TellerView.gender.setPrefWidth(AdminView.UPdate.resize(gender.getText()));
-        TellerView.username.setPrefWidth(AdminView.UPdate.resize(phone.getText()));
-        TellerView.password.setPrefWidth(AdminView.UPdate.resize(phone.getText()));
-        TellerView.email.setPrefWidth(AdminView.UPdate.resize("email.getText()"));
-        TellerView.registrationDate.setPrefWidth(AdminView.UPdate.resize("registration"));
-        StackPane stackPane = new StackPane();
-        stackPane.getChildren().add(userTableView);
-        VBox centeral = new VBox();
-        centeral.setSpacing(10);
-        HBox searchContainer = new HBox();
-        searchContainer.setAlignment(Pos.TOP_RIGHT);
-        Label enterAcc = new Label("Enter account number");
-        searchContainer.getChildren().addAll(enterAcc,AdminView.txtFldAccNumber,btnSearchUser);
-        searchContainer.setSpacing(15);
-        centeral.getChildren().addAll(searchContainer,stackPane);
-        return centeral;
-    }
-    public static Parent searchedUserInfo(String type){
-        VBox leftContent = new VBox();
-        profile.setFitWidth(80);
-        profile.setFitHeight(100);
-        profile.setTranslateX(20);
-        leftContent.getChildren().addAll(profile,name,Ugender,accNumber,balance,emailS,phoneNumber);
-        VBox rightMenu = new VBox();
-        btnDelete.setMinWidth(50);
-        btnUpdate.setMinWidth(50);
-        btnNotify.setMinWidth(50);
-        leftContent.setSpacing(30);
-        rightMenu.setSpacing(5);
-        rightMenu.getChildren().addAll(btnDelete,btnUpdate,btnNotify);
-        HBox hBox = new HBox();
-        StackPane centerContent  =new StackPane();
-        centerContent.prefWidthProperty().bind(BMS.scene.widthProperty().multiply(0.3));
-        hBox.setSpacing(30);
-        rightMenu.setAlignment(Pos.TOP_RIGHT);
-        leftContent.setMinWidth(600);
-        hBox.getChildren().addAll(leftContent,rightMenu);
-        if (type.equalsIgnoreCase("DELETE"));
-//            centerContent.getChildren().add(deleteUserView());
-        else if (type.equalsIgnoreCase("UPDATE"))
-            centerContent.getChildren().add(transferView());
-        else if (type.equalsIgnoreCase("NOTIFY"))
-            centerContent.getChildren().add(withdrawView());
-        return hBox;
-    }
+
     public static Parent searchedTellerInfo(String type){
         VBox leftContent = new VBox();
         profile.setFitWidth(80);
@@ -418,12 +275,13 @@ public class AdminView  extends EmployeeView{
         hBox.setSpacing(30);
         rightMenu.setAlignment(Pos.TOP_RIGHT);
         leftContent.setMinWidth(600);
+        hBox.setMinHeight(500);
         hBox.getChildren().addAll(leftContent,rightMenu);
         if (type.equalsIgnoreCase("DELETE"));
 //            centerContent.getChildren().add(deleteUserView());
         else if (type.equalsIgnoreCase("UPDATE"))
-            centerContent.getChildren().add(transferView());
-        else if (type.equalsIgnoreCase("NOTIFY"))
+            centerContent.getChildren().add(AdminController.updateTeller());
+        else if (type.equalsIgnoreCase("back"))
             centerContent.getChildren().add(withdrawView());
         return hBox;
     }

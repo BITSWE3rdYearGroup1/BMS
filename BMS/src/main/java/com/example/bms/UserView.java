@@ -19,6 +19,9 @@ import javafx.scene.text.Text;
 
 import java.util.Objects;
 
+import static com.example.bms.BMS.homePageImage;
+import static com.example.bms.BMS.logoutImage;
+
 
 public class UserView extends EmployeeView{
     static Button transferbtn = new Button("Transfer.");
@@ -32,13 +35,18 @@ public class UserView extends EmployeeView{
      public static Label emailS = new Label();
      public static Label phoneNumber = new Label();
     public static Label txtArea = new Label("");
+    public static TextField txtOldPass = new TextField();
+    public static TextField txtNewPass = new TextField();
+    public static TextField txtConfirmPass = new TextField();
    public static TextField txtFldReceiverAcc = new TextField();
    public static TextField txtFldAmount = new TextField();
    public static Button btnComplete = new Button("Complete");
+   public static Button btnChangePass = new Button("Change Password");
+   public static Button btnChange = new Button("Change");
     public static Parent userHome(String type) {
-        ImageView transferImage = new ImageView(new Image(UserView.class.getResourceAsStream("Image/transfer-modified.png")));
-        ImageView balanceImage = new ImageView(new Image(UserView.class.getResourceAsStream("Image/balance-modified.png")));
-        ImageView transactionImage = new ImageView(new Image(UserView.class.getResourceAsStream("Image/createacc-modified.png")));
+        ImageView transferImage = new ImageView(new Image(Objects.requireNonNull(UserView.class.getResourceAsStream("Image/transfer-modified.png"))));
+        ImageView balanceImage = new ImageView(new Image(Objects.requireNonNull(UserView.class.getResourceAsStream("Image/balance-modified.png"))));
+        ImageView transactionImage = new ImageView(new Image(Objects.requireNonNull(UserView.class.getResourceAsStream("Image/createacc-modified.png"))));
         balanceImage.setFitHeight(110);
         balanceImage.setFitWidth(110);
         transactionImage.setFitHeight(110);
@@ -53,7 +61,9 @@ public class UserView extends EmployeeView{
         header.setMaxHeight(100);
         header.getStyleClass().add("header");
         header.setTranslateX(BMS.scene.getWidth()*0.05);
-        header.getChildren().add(text);
+        header.getChildren().addAll(homePageImage,text, logoutImage);
+        homePageImage.translateXProperty().bind(header.widthProperty().divide(-2.2));
+        logoutImage.translateXProperty().bind(header.widthProperty().divide(2.2));
         VBox leftMenu = new VBox();
         VBox allPage = new VBox();
         HBox body = new HBox();
@@ -70,22 +80,6 @@ public class UserView extends EmployeeView{
         allPage.getChildren().addAll(header,body);
         body.setMaxSize(BMS.scene.getWidth()*0.9,100);
         body.setMaxHeight(100);
-//        VBox leftContent = new VBox();
-//        leftContent.getChildren().addAll();
-//        VBox rightMenu = new VBox();
-//        btnDelete.setMinWidth(50);
-//        btnUpdate.setMinWidth(50);
-//        btnNotify.setMinWidth(50);
-//        rightMenu.getChildren().addAll(btnDelete,btnUpdate,btnNotify);
-//        leftContent.setSpacing(30);
-//        rightMenu.setSpacing(5);
-//        HBox hBox = new HBox();
-//        StackPane centerContent  =new StackPane();
-//        centerContent.prefWidthProperty().bind(BMS.scene.widthProperty().multiply(0.3));
-//        hBox.setSpacing(30);
-//        rightMenu.setAlignment(Pos.TOP_RIGHT);
-//        leftContent.setMinWidth(600);
-//        hBox.getChildren().addAll(leftContent,rightMenu);
         VBox rightMenu = new VBox();
         rightMenu.getStyleClass().add("right");
         rightMenu.setMinWidth(300);
@@ -99,7 +93,7 @@ public class UserView extends EmployeeView{
         balance.setText("Current Balance : " +(User.user.getBalance()));
         emailS.setText("Yours Email : " +User.user.getEmail());
         phoneNumber.setText("Phone number : " +User.user.getPhone());
-        rightMenu.getChildren().addAll(imageView,name,Ugender,accNumber,balance,emailS,phoneNumber);
+        rightMenu.getChildren().addAll(imageView,name,Ugender,accNumber,balance,emailS,phoneNumber,btnChangePass);
         body.getStyleClass().add("header");
         body.setTranslateX(BMS.scene.getWidth()*0.05);
         StackPane main = new StackPane();
@@ -111,11 +105,15 @@ public class UserView extends EmployeeView{
         if (type.equalsIgnoreCase("balance"))
         main.getChildren().addAll(seeBalance());
         else if (type.equalsIgnoreCase("transfer")) {
-            text.setText("Transfer fund page");
+            text.setText("Transfer  fund ");
             main.getChildren().addAll(transferView());
         }
-        else {
-            text.setText("Transaction history page");
+        else if(type.equalsIgnoreCase("change")) {
+            text.setText("Change Password");
+            main.getChildren().add(changePassword());
+        }
+        else if (type.equalsIgnoreCase("transaction")){
+            text.setText("Your Transaction history ");
             main.getChildren().addAll(transactionView());
         }
         allPage.prefWidthProperty().bind(BMS.scene.widthProperty().multiply(1));
@@ -149,5 +147,25 @@ public class UserView extends EmployeeView{
     }
     public static Parent transactionView(){
         return TransactionController.displayTransaction();
+    }
+    public static Parent changePassword(){
+        Label oldPass = new Label("Enter old Password");
+        Label newPass = new Label("Enter new password");
+        Label confirmPas = new Label("Confirm Password");
+        GridPane changePassGrid = new GridPane();
+        changePassGrid.add(oldPass,1,1);
+        changePassGrid.add(txtOldPass,2,1);
+        changePassGrid.add(newPass,1,2);
+        changePassGrid.add(txtNewPass,2,2);
+        changePassGrid.add(confirmPas,1,3);
+        changePassGrid.add(txtConfirmPass,2,3);
+        changePassGrid.add(btnChange,2,4);
+        changePassGrid.setHgap(20);
+        changePassGrid.setVgap(20);
+        changePassGrid.setAlignment(Pos.BASELINE_CENTER);
+        StackPane changePassWordContainer = new StackPane();
+        changePassWordContainer.getChildren().add(changePassGrid);
+        return changePassWordContainer;
+
     }
 }
